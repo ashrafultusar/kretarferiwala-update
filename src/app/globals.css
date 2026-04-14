@@ -51,3 +51,12 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+
+@media print {
+  /* আপনার হেডার বা ন্যাভবারের ক্লাস যদি 'navbar' হয় */
+  header, nav, .admin-header, .menu-icon {
+    display: none !important;
+  }
+}

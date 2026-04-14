@@ -7,15 +7,16 @@ const OrderSchema = new mongoose.Schema({
     address: String,
     note: String,
     status: { type: String, default: "active" },
-    paymentMethod: String,
+    paymentMethod: String, 
+    transactionId: String,  
     subTotal: Number,
     deliveryCharge: Number,
     totalAmount: Number,
     products: Array,
 }, {
-    strict: false, // Ensures existing fields are captured without data loss
+    strict: false,
     timestamps: true,
     collection: "orders"
 });
 
-export default mongoose.models.Order || mongoose.model("Order", OrderSchema, "orders");
+export default mongoose.models.Order || mongoose.model("Order", OrderSchema, "orders"); 
