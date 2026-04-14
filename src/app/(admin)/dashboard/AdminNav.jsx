@@ -75,8 +75,8 @@ export default function AdminNav({ children }) {
       </aside>
 
       {/* Mobile topbar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 bg-white shadow-md p-4 flex justify-between items-center z-40">
-        <Link href="/" className="text-xl font-bold text-orange-500">
+      <div className="md:hidden print:hidden fixed top-0 left-0  right-0 bg-white shadow-md p-4 flex justify-between items-center z-40">
+        <Link href="/" className="text-xl font-bold text-orange-500 print:hidden">
           Admin
         </Link>
         <button onClick={() => setShowSidebar(!showSidebar)}>
