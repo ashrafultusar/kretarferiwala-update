@@ -1,0 +1,79 @@
+"use client";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { getDeliveryCharge } from "@/lib/data/deliveryCharge";
+import { updateDeliveryCharge } from "@/actions/deliveryCharge";
+
+const DeliveryChargeForm = () => {
+  const [insideDhaka, setInsideDhaka] = useState(70);
+  const [outsideDhaka, setOutsideDhaka] = useState(150);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCharge = async () => {
+      const res = await getDeliveryCharge();
+      if (res.success && res.charge) {
+        setInsideDhaka(res.charge.insideDhaka);
+        setOutsideDhaka(res.charge.outsideDhaka);
+      }
+    };
+    fetchCharge();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const res = await updateDeliveryCharge(insideDhaka, outsideDhaka);
+
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      toast.error("Something went wrong!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block mb-1 font-semibold">ঢাকার ভিতরে চার্জ *</label>
+        <input
+          type="number"
+          min={0}
+          value={insideDhaka}
+          onChange={(e) => setInsideDhaka(Number(e.target.value))}
+          className="w-full border rounded-md p-2"
+          required
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-semibold">ঢাকার বাইরে চার্জ *</label>
+        <input
+          type="number"
+          min={0}
+          value={outsideDhaka}
+          onChange={(e) => setOutsideDhaka(Number(e.target.value))}
+          className="w-full border rounded-md p-2"
+          required
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={isLoading}
+        className={`bg-blue-500 text-white font-semibold py-3 rounded-md w-full ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-600"
+          }`}
+      >
+        {isLoading ? "Updating..." : "আপডেট করুন"}
+      </button>
+    </form>
+  );
+};
+
+export default DeliveryChargeForm;
