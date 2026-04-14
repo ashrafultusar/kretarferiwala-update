@@ -1,12 +1,9 @@
 import AllCategories from "@/components/AllCategories/AllCategories";
-import AllProducts from "@/components/HomePage/AllProducts/AllProducts";
-import Features from "@/components/main/Home/Features";
+import AllProducts from "@/components/main/Home/AllProducts/AllProducts";
 import NewArrivals from "@/components/main/Home/NewArrivals";
 import Testimonials from "@/components/main/Home/Testimonials/Testimonials";
 import Slider from "@/components/Slider/Slider";
 import { getHomeData } from "@/lib/data/fetchData";
-
-
 
 export default async function Home() {
   const { sliders, categories, products } = await getHomeData();
@@ -15,10 +12,11 @@ export default async function Home() {
       <div className="w-full">
         <Slider data={sliders} />
       </div>
-      <Features/>
-      <AllCategories data={categories} /><NewArrivals data={products} />
+
+      <AllCategories data={categories} />
+      <NewArrivals data={products} />
       <AllProducts data={products} />
-      <Testimonials/>
+      <Testimonials />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -17,19 +17,19 @@ const AllCategories = ({ data }) => {
   }, []);
 
   return (
-    <div className="container mx-auto my-12 px-4 text-center">
+    <div className="container mx-auto my-8 md:my-12 px-4 text-center">
       {/* Title Section */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800">
+      <div className="mb-6 md:mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
           Shop By <span className="text-orange-500">Categories</span>
         </h2>
-        <p className="text-gray-500 text-sm mt-2">Find exactly what you need</p>
+        <p className="text-gray-400 text-xs md:text-sm mt-1">Find exactly what you need</p>
       </div>
 
       {navigationReady && (
         <Swiper
-          slidesPerView={6}
-          spaceBetween={20}
+          slidesPerView={3} 
+          spaceBetween={12} 
           grabCursor={true}
           autoplay={{
             delay: 3000,
@@ -37,45 +37,64 @@ const AllCategories = ({ data }) => {
           }}
           modules={[Navigation, Autoplay]}
           breakpoints={{
-            0: { slidesPerView: 2 },
-            480: { slidesPerView: 3 },
-            768: { slidesPerView: 4 },
-            1024: { slidesPerView: 6 },
+            // মোবাইল (০ থেকে ৪৮০ পিক্সেল) - ২টা স্লাইড
+            0: { 
+              slidesPerView: 2,
+              spaceBetween: 10
+            },
+            // ট্যাবলেট - ৪টা স্লাইড
+            640: { 
+              slidesPerView: 4,
+              spaceBetween: 15
+            },
+            // ডেস্কটপ - ৬টা স্লাইড
+            1024: { 
+              slidesPerView: 6,
+              spaceBetween: 20
+            },
           }}
-          /* স্লাইডার হাইট অটো ঠিক করার জন্য নিচের এই ক্লাসটি জরুরি */
-          className="pb-10 !h-auto" 
+          className="pb-8 !h-auto" 
         >
           {data?.map((category) => (
-            /* SwiperSlide কে অবশ্যই h-auto দিতে হবে যাতে সে তার কন্টেন্টের ফুল হাইট নেয় */
             <SwiperSlide key={category._id} className="!h-auto">
               <Link
                 href={`/products-category/${encodeURIComponent(category.name)}`}
                 className="group h-full block"
               >
-                {/* h-full ব্যবহারের ফলে সব কার্ড এখন বড় কার্ডটির সমান হাইট নিবে */}
-                <div className="bg-white rounded-2xl p-6 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-xl border border-transparent hover:border-gray-100 h-full min-h-[180px]">
+                {/* কার্ডের প্যাডিং মোবাইলে কমানো হয়েছে (p-4 vs md:p-6) */}
+                <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-lg border border-gray-50 hover:border-orange-100 h-full min-h-[140px] md:min-h-[180px]">
                   
-                  {/* Icon Box - Boro Kora Holo (w-16/h-16 theke w-24/h-24) */}
-                  <div className="w-24 h-24 flex items-center justify-center bg-gray-50 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300 overflow-hidden shrink-0">
+                  {/* ইমেজের সাইজ মোবাইলে ছোট করা হয়েছে (w-16 vs md:w-24) */}
+                  <div className="w-16 h-16 md:w-24 md:h-24 flex items-center justify-center bg-gray-50 rounded-xl md:rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300 overflow-hidden shrink-0">
                     {category.image ? (
                       <Image
                         src={category.image}
                         alt={category.name}
-                        width={60} // Width barano holo
-                        height={60} // Height barano holo
-                        className="object-contain"
+                        width={45} // মোবাইলের জন্য ছোট উইডথ
+                        height={45} 
+                        className="object-contain md:hidden" // শুধু মোবাইলের জন্য ছোট সাইজ
                       />
                     ) : (
-                      <div className="w-16 h-16 bg-orange-100 rounded-full" /> // Placeholder o boro kora holo
+                      <div className="w-10 h-10 bg-orange-50 rounded-full" />
+                    )}
+                    
+                    {/* ডেস্কটপের জন্য আগের সাইজ বজায় রাখা হয়েছে */}
+                    {category.image && (
+                      <Image
+                        src={category.image}
+                        alt={category.name}
+                        width={65}
+                        height={65}
+                        className="object-contain hidden md:block" 
+                      />
                     )}
                   </div>
 
-                  {/* Text Section */}
-                  <div className="text-center mt-auto"> {/* mt-auto টেক্সটকে সবসময় নিচে পুশ করবে */}
-                    <h3 className="text-sm font-bold text-gray-800 mb-1 leading-tight">
+                  {/* টেক্সট সেকশন */}
+                  <div className="text-center mt-auto">
+                    <h3 className="text-[12px] md:text-sm font-bold text-gray-800 leading-tight">
                       {category.name}
                     </h3>
-                 
                   </div>
                 </div>
               </Link>
