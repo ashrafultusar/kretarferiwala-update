@@ -8,13 +8,10 @@ import { toast } from "react-toastify";
 import LoadingPage from "../../loading";
 import { createOrderAction } from "@/actions/order";
 
-
 const CheckoutPage = () => {
   const [products, setProducts] = useState([]);
-  const [deliveryChargeData, setDeliveryChargeData] =
-    useState(null);
-  const [selectedDeliveryCharge, setSelectedDeliveryCharge] =
-    useState(0);
+  const [deliveryChargeData, setDeliveryChargeData] = useState(null);
+  const [selectedDeliveryCharge, setSelectedDeliveryCharge] = useState(0);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
@@ -59,9 +56,7 @@ const CheckoutPage = () => {
     fetchDeliveryCharge();
   }, []);
 
-  const handleChange = (
-    e
-  ) => {
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -84,14 +79,14 @@ const CheckoutPage = () => {
     );
     setProducts(updated);
     localStorage.setItem("checkoutCart", JSON.stringify(updated));
-    window.dispatchEvent(new Event("cartUpdated")); // এটাও দিলাম
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const handleRemove = (id) => {
     const updated = products.filter((p) => p.id !== id);
     setProducts(updated);
     localStorage.setItem("checkoutCart", JSON.stringify(updated));
-    window.dispatchEvent(new Event("cartUpdated")); // এটাও দিলাম
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const subTotal = products.reduce(
@@ -104,8 +99,17 @@ const CheckoutPage = () => {
     e.preventDefault();
     setError("");
 
+    // প্রাথমিক ফিল্ড চেক
     if (!formData.name || !formData.phone || !formData.address) {
       setError("সব ফিল্ড পূরণ করুন");
+      return;
+    }
+
+    // মোবাইল নম্বর ১১ ডিজিট কি না তা চেক করুন (Regex দিয়ে)
+    const phoneRegex = /^01[3-9]\d{8}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      setError("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (যেমন: 017XXXXXXXX)");
+      toast.error("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন");
       return;
     }
 
@@ -158,7 +162,7 @@ const CheckoutPage = () => {
 
   const handleClickOutside = (e) => {
     const modal = document.getElementById("orderSuccessModal");
-    if (modal && !modal.contains(e)) {
+    if (modal && !modal.contains(e.target)) {
       handleCloseModal();
     }
   };
@@ -209,8 +213,9 @@ const CheckoutPage = () => {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="আপনার মোবাইল নম্বর"
+              placeholder="আপনার মোবাইল নম্বর (১১ ডিজিট)"
               className="w-full border rounded-md p-2"
+              maxLength={11}
               required
             />
           </div>
@@ -242,13 +247,14 @@ const CheckoutPage = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-2">কুরিয়ার চার্জ</h3>
+            <h3 className="font-semibold mb-2">কুরিয়ার চার্জ</h3>
             <div className="space-y-2">
               <label
-                className={`flex items-center p-2 rounded-md cursor-pointer ${selectedDeliveryCharge === deliveryChargeData.outsideDhaka
+                className={`flex items-center p-2 rounded-md cursor-pointer ${
+                  selectedDeliveryCharge === deliveryChargeData.outsideDhaka
                     ? "bg-green-600 text-white"
                     : "bg-gray-300 text-black"
-                  }`}
+                }`}
               >
                 <input
                   type="radio"
@@ -263,10 +269,11 @@ const CheckoutPage = () => {
                 ঢাকার বাইরে {deliveryChargeData.outsideDhaka} টাকা
               </label>
               <label
-                className={`flex items-center p-2 rounded-md cursor-pointer ${selectedDeliveryCharge === deliveryChargeData.insideDhaka
+                className={`flex items-center p-2 rounded-md cursor-pointer ${
+                  selectedDeliveryCharge === deliveryChargeData.insideDhaka
                     ? "bg-green-600 text-white"
                     : "bg-gray-300 text-black"
-                  }`}
+                }`}
               >
                 <input
                   type="radio"
@@ -324,6 +331,7 @@ const CheckoutPage = () => {
                 <td className="px-2 py-2">{product.discountPrice}Tk</td>
                 <td className="px-2 py-2">
                   <button
+                    type="button"
                     onClick={() => handleDecrease(product.id)}
                     className="bg-orange-400 cursor-pointer text-white px-2 rounded"
                   >
@@ -331,6 +339,7 @@ const CheckoutPage = () => {
                   </button>
                   <span className="mx-2">{product.quantity}</span>
                   <button
+                    type="button"
                     onClick={() => handleIncrease(product.id)}
                     className="cursor-pointer bg-green-400 text-white px-2 rounded"
                   >
@@ -342,6 +351,7 @@ const CheckoutPage = () => {
                 </td>
                 <td className="px-2 py-2">
                   <button
+                    type="button"
                     onClick={() => handleRemove(product.id)}
                     className="cursor-pointer text-red-500"
                   >
@@ -373,10 +383,10 @@ const CheckoutPage = () => {
       {orderSuccess && (
         <div
           id="orderSuccessModal"
-          className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center"
+          className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50"
           onClick={handleClickOutside}
         >
-          <div className="bg-white p-8 rounded-lg w-96">
+          <div className="bg-white p-8 rounded-lg w-96 relative">
             <h2 className="text-center text-xl font-semibold text-green-500">
               আপনার অর্ডার সফলভাবে সম্পন্ন হয়েছে!
             </h2>
@@ -395,7 +405,7 @@ const CheckoutPage = () => {
                 <br />
                 Mail: kretarferiwala@gmail.com
               </p>
-              <p className="mt-4 text-center text-red-500">
+              <p className="mt-4 text-center text-red-500 text-sm">
                 ফেইক অর্ডার শনাক্ত করতে আপনার IP অ্যাড্রেস আমরা রেখেছি। ফেইক
                 অর্ডার করলে, আমরা তার বিরুদ্ধে আইনি পদক্ষেপ নিব।
               </p>
