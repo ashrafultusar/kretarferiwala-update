@@ -1,10 +1,6 @@
-
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-
 import Script from "next/script";
-import ClientLayout from "../components/ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,21 +39,22 @@ export default function RootLayout({ children }) {
             fbq('track', 'PageView');
           `}
         </Script>
+      </head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {/* NoScript Pixel fall-back */}
         <noscript>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             height="1"
             width="1"
             style={{ display: "none" }}
-            src={`https://www.facebook.com/tr?id=606846108506245&ev=PageView&noscript=1`}
+            src="https://www.facebook.com/tr?id=606846108506245&ev=PageView&noscript=1"
             alt="fb-pixel"
           />
         </noscript>
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col relative`}
-      >
-        <ClientLayout>{children}</ClientLayout>
+
+        {children}
       </body>
     </html>
   );
