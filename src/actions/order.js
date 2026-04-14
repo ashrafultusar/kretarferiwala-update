@@ -5,12 +5,13 @@ import Order from "@/models/Order";
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 import { headers } from "next/headers";
+import { sendAdminOrderEmail } from "@/lib/mail";
 
 
 const sha256 = (str) => {
     if (!str) return "";
     return crypto.createHash("sha256").update(str.trim().toLowerCase()).digest("hex");
-}; 
+};
 
 // Meta Conversion API (CAPI) Integration
 async function sendMetaCAPIPurchaseEvent(order, ip, userAgent) {
@@ -56,14 +57,14 @@ async function sendMetaCAPIPurchaseEvent(order, ip, userAgent) {
 export async function createOrderAction(orderData) {
     try {
         await connectDB();
-        
+
         // ভ্যালিডেশন: যদি বিকাশ হয় তবে TrxID থাকতেই হবে
         if (orderData.paymentMethod === "bKash" && !orderData.transactionId) {
             return { success: false, message: "বিকাশ ট্রানজেকশন আইডি প্রয়োজন" };
         }
 
         const generateOrderNumber = () => `GB#${Math.floor(100000 + Math.random() * 900000)}`;
-        
+
         const finalOrderData = {
             ...orderData,
             orderNumber: generateOrderNumber(),
@@ -79,12 +80,15 @@ export async function createOrderAction(orderData) {
         // ব্যাকগ্রাউন্ডে ইভেন্ট পাঠানো (অর্ডার প্রসেস আটকাবে না)
         sendMetaCAPIPurchaseEvent(createdOrder, ip, userAgent);
 
+        // অ্যাডমিনকে নোটিফিকেশন ইমেইল পাঠানো (ব্যাকগ্রাউন্ডে)
+        sendAdminOrderEmail(createdOrder).catch((err) => console.error("Email Error:", err));
+
         revalidatePath("/dashboard/orders");
 
-        return { 
-            success: true, 
-            message: "Order placed successfully", 
-            orderNumber: createdOrder.orderNumber 
+        return {
+            success: true,
+            message: "Order placed successfully",
+            orderNumber: createdOrder.orderNumber
         };
     } catch (error) {
         console.error("Order Error:", error);
