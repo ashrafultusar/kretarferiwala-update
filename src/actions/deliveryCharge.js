@@ -4,18 +4,20 @@ import { connectDB } from "@/db/dbConfig";
 import DeliveryCharge from "@/models/DeliveryCharge";
 import { revalidatePath } from "next/cache";
 
-export async function updateDeliveryCharge(insideDhaka, outsideDhaka) {
+export async function updateDeliveryCharge(insideDhaka, subDhaka, outsideDhaka) {
     try {
         await connectDB();
 
         let charge = await DeliveryCharge.findOne();
         if (charge) {
             charge.insideDhaka = Number(insideDhaka);
+            charge.subDhaka = Number(subDhaka); // আপডেট
             charge.outsideDhaka = Number(outsideDhaka);
             await charge.save();
         } else {
             charge = await DeliveryCharge.create({
                 insideDhaka: Number(insideDhaka),
+                subDhaka: Number(subDhaka), // নতুন তৈরি
                 outsideDhaka: Number(outsideDhaka)
             });
         }

@@ -1,6 +1,5 @@
 import AllCategories from "@/components/AllCategories/AllCategories";
 import AllProducts from "@/components/HomePage/AllProducts/AllProducts";
-import Features from "@/components/main/Home/Features";
 import NewArrivals from "@/components/main/Home/NewArrivals";
 import Testimonials from "@/components/main/Home/Testimonials/Testimonials";
 import Slider from "@/components/Slider/Slider";
@@ -15,7 +14,7 @@ export default async function Home() {
       <div className="w-full">
         <Slider data={sliders} />
       </div>
-      <Features/>
+  
       <AllCategories data={categories} /><NewArrivals data={products} />
       <AllProducts data={products} />
       <Testimonials/>

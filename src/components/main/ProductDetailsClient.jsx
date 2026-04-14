@@ -7,10 +7,15 @@ import TitleWithLine from "@/Shared/TitleWithLine/TitleWithLine";
 import ProductCard from "@/Shared/ProductCard/ProductCard";
 import Pagination from "@/components/Pagination/Pagination";
 
-const ProductDetailsClient = ({ initialProduct, initialRelated, initialDelivery }) => {
+const ProductDetailsClient = ({
+  initialProduct,
+  initialRelated,
+  initialDelivery,
+}) => {
   const [isOrdering, setIsOrdering] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedArea, setSelectedArea] = useState("outsideDhaka"); // Default Outside Dhaka
   const productsPerPage = 12;
 
   const product = initialProduct;
@@ -35,8 +40,12 @@ const ProductDetailsClient = ({ initialProduct, initialRelated, initialDelivery 
       quantity: 1,
     };
 
-    const existingCart = JSON.parse(localStorage.getItem("checkoutCart") || "[]");
-    const existingIndex = existingCart.findIndex((item) => item.id === newProduct.id);
+    const existingCart = JSON.parse(
+      localStorage.getItem("checkoutCart") || "[]"
+    );
+    const existingIndex = existingCart.findIndex(
+      (item) => item.id === newProduct.id
+    );
 
     if (existingIndex !== -1) {
       existingCart[existingIndex].quantity += 1;
@@ -61,11 +70,16 @@ const ProductDetailsClient = ({ initialProduct, initialRelated, initialDelivery 
               Price:{" "}
               <span className="text-red-600">৳ {product.discountPrice}</span>
             </p>
-            <span className="line-through text-gray-500">৳ {product.regularPrice}</span>
+            <span className="line-through text-gray-500">
+              ৳ {product.regularPrice}
+            </span>
           </div>
 
           <div className="flex flex-col md:flex-row justify-between gap-4">
-            <button onClick={handleAddToCart} className="px-6 py-2 w-full bg-amber-400 rounded cursor-pointer">
+            <button
+              onClick={handleAddToCart}
+              className="px-6 py-2 w-full bg-amber-400 rounded cursor-pointer font-semibold"
+            >
               Add to cart
             </button>
 
@@ -78,29 +92,54 @@ const ProductDetailsClient = ({ initialProduct, initialRelated, initialDelivery 
             </Link>
           </div>
 
-          <a href="https://wa.me/8801795072200" className="w-full text-center bg-blue-100 text-black py-3 rounded shadow">
+          <a
+            href="https://wa.me/8801795072200"
+            className="w-full text-center bg-blue-100 text-black py-3 rounded shadow font-medium"
+          >
             কল করতে ক্লিক করুন: 01795072200
           </a>
 
-          <p className="font-bold">Code : <span className="font-medium">{product.code || "N/A"}</span></p>
+          <p className="font-bold">
+            Code : <span className="font-medium">{product.code || "N/A"}</span>
+          </p>
 
           <p className="font-bold">
             Category:{" "}
             <span className="flex flex-wrap gap-2 mt-1">
-              {(Array.isArray(product.category) ? product.category : [product.category]).map((cat, idx) => (
-                <span key={idx} className="bg-gray-300 text-black px-2 py-1 rounded-full text-sm">{cat}</span>
+              {(Array.isArray(product.category)
+                ? product.category
+                : [product.category]
+              ).map((cat, idx) => (
+                <span
+                  key={idx}
+                  className="bg-gray-300 text-black px-2 py-1 rounded-full text-sm font-normal"
+                >
+                  {cat}
+                </span>
               ))}
             </span>
           </p>
 
-          <div className="text-sm">
-            <div className="flex justify-between border-t pt-3">
-              <span>ঢাকায় ডেলিভারি খরচ</span>
-              <span>৳ {deliveryCharge.insideDhaka}</span>
-            </div>
-            <div className="flex justify-between border-t pt-3">
-              <span>ঢাকার বাইরে কুরিয়ার খরচ</span>
-              <span>৳ {deliveryCharge.outsideDhaka}</span>
+          {/* Delivery Charge Dropdown - Updated Section */}
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-3">
+            <label className="block text-sm font-semibold text-gray-700">
+              ডেলিভারি এরিয়া নির্বাচন করুন:
+            </label>
+            <select
+              value={selectedArea}
+              onChange={(e) => setSelectedArea(e.target.value)}
+              className="w-full p-2.5 border rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-orange-400 cursor-pointer"
+            >
+              <option value="outsideDhaka">ঢাকার বাইরে</option>
+              <option value="insideDhaka">ঢাকার ভিতরে</option>
+              <option value="subDhaka">ঢাকার পার্শ্ববর্তী (Sub Dhaka)</option>
+            </select>
+
+            <div className="flex justify-between items-center pt-2 border-t border-dashed border-gray-300">
+              <span className="text-sm font-medium text-gray-600">ডেলিভারি খরচ:</span>
+              <span className="text-lg font-bold text-green-600">
+                ৳ {deliveryCharge?.[selectedArea] || 0}
+              </span>
             </div>
           </div>
         </div>
@@ -111,44 +150,70 @@ const ProductDetailsClient = ({ initialProduct, initialRelated, initialDelivery 
         <div className="flex space-x-4 border-b">
           <button
             onClick={() => setActiveTab("description")}
-            className={`py-2 px-4 ${activeTab === "description" ? "border-b-2 border-green-600 text-green-600" : "text-gray-500"}`}
+            className={`py-2 px-4 transition-all ${
+              activeTab === "description"
+                ? "border-b-2 border-green-600 text-green-600 font-semibold"
+                : "text-gray-500"
+            }`}
           >
             Description
           </button>
           <button
             onClick={() => setActiveTab("return")}
-            className={`py-2 px-4 ${activeTab === "return" ? "border-b-2 border-green-600 text-green-600" : "text-gray-500"}`}
+            className={`py-2 px-4 transition-all ${
+              activeTab === "return"
+                ? "border-b-2 border-green-600 text-green-600 font-semibold"
+                : "text-gray-500"
+            }`}
           >
             Return Policy
           </button>
         </div>
-        <div className="mt-4 bg-gray-50 p-4 rounded shadow text-sm leading-relaxed">
+        <div className="mt-4 bg-white p-5 rounded border border-gray-100 shadow-sm text-sm leading-relaxed">
           {activeTab === "description" ? (
             <div dangerouslySetInnerHTML={{ __html: product.description }} />
           ) : (
-            <div>
+            <div className="space-y-2">
               <p>১) উল্লিখিত ডেলিভারি চার্জ ১ কেজি পর্যন্ত ওজনের পণ্যের জন্য।</p>
-              <p className="mt-2">২) ছবি এবং বর্ণনার সাথে পণ্য মিলে থাকা সত্ত্বেও রিটার্ন করতে চাইলে কুরিয়ার চার্জ দিতে হবে।</p>
+              <p>
+                ২) ছবি এবং বর্ণনার সাথে পণ্য মিলে থাকা সত্ত্বেও রিটার্ন করতে
+                চাইলে কুরিয়ার চার্জ দিতে হবে।
+              </p>
             </div>
           )}
         </div>
       </div>
 
       {/* Related Products Section */}
-      <div className="my-7">
+      <div className="my-10">
         <TitleWithLine title="Related Products" />
         {relatedProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mt-6">
             {paginatedProducts.map((item) => (
-              <ProductCard key={item._id} id={item._id} name={item.name} regularPrice={item.regularPrice} discountPrice={item.discountPrice} image={item.images?.[0]} />
+              <ProductCard
+                key={item._id}
+                id={item._id}
+                name={item.name}
+                regularPrice={item.regularPrice}
+                discountPrice={item.discountPrice}
+                image={item.images?.[0]}
+              />
             ))}
           </div>
         ) : (
-          <div className="text-center text-red-500 py-10">No related products found</div>
+          <div className="text-center text-red-500 py-10">
+            No related products found
+          </div>
         )}
-        
+
         {relatedProducts.length > productsPerPage && (
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+          <div className="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         )}
       </div>
     </div>
