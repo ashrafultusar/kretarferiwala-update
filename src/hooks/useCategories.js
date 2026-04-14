@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 
+import { getAllCategories } from "@/lib/data/category";
+
 const useCategories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -7,11 +9,12 @@ const useCategories = () => {
   const fetchCategories = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_API}/categories`
-      );
-      const data = await res.json();
-      setCategories(data);
+      const res = await getAllCategories();
+      if (res?.success) {
+        setCategories(res.categories || []);
+      } else {
+        setCategories([]);
+      }
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {

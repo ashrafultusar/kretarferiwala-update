@@ -8,7 +8,7 @@ import { FaCartArrowDown, FaSearch } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useCategories from "../../hooks/useCategories";
-
+import { LucideShoppingCart } from "lucide-react";
 
 export default function Navbar() {
   const { categories } = useCategories();
@@ -20,7 +20,7 @@ export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState("");
   const [token, setToken] = useState(null);
   const router = useRouter();
- 
+
   useEffect(() => {
     setToken(localStorage.getItem("token"));
   }, []);
@@ -29,10 +29,10 @@ export default function Navbar() {
     if (searchTerm.trim()) {
       router.push(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm("");
+      setIsOpen(false); // Mobile search এর পর মেনু বন্ধ হবে
     }
   };
 
-  // Detect scroll direction
   const handleScroll = useCallback(() => {
     if (typeof window !== "undefined") {
       const currentScrollY = window.scrollY;
@@ -50,7 +50,6 @@ export default function Navbar() {
 
     getCartCount();
     window.addEventListener("cartUpdated", getCartCount);
-
     return () => window.removeEventListener("cartUpdated", getCartCount);
   }, []);
 
@@ -67,7 +66,7 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Mobile View */}
+          {/* --- Mobile View Header --- */}
           <div className="flex items-center md:hidden w-full justify-between">
             <button onClick={() => setIsOpen(true)}>
               <IoMenuSharp className="text-2xl cursor-pointer text-black" />
@@ -84,7 +83,6 @@ export default function Navbar() {
               />
             </Link>
 
-            {/* Cart Icon for Mobile */}
             <Link href="/checkout" className="relative">
               <FaCartArrowDown className="text-2xl text-gray-700 hover:text-red-500" />
               {cartCount > 0 && (
@@ -95,7 +93,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop View */}
+          {/* --- Desktop View Header --- */}
           <div className="hidden md:flex w-full items-center justify-between">
             <Link
               href="/"
@@ -109,48 +107,51 @@ export default function Navbar() {
               />
             </Link>
 
-            {/* Search Bar */}
-            <div className="flex-1 mx-6 relative">
-              <input
-                type="text"
-                placeholder="Search Products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                className="w-full border border-gray-300 rounded-md py-2 pl-4 pr-10 focus:outline-none focus:border-blue-400"
-              />
-              <FaSearch
-                className="absolute right-3 top-3 text-gray-400 cursor-pointer"
-                onClick={handleSearch}
-              />
+            {/* Desktop Search Bar (Styled like the image) */}
+            <div className="flex-1 flex justify-center px-10">
+              <div className="relative w-full max-w-lg flex items-center bg-gray-50 rounded-full border border-gray-200 shadow-sm transition-all focus-within:ring-2 focus-within:ring-orange-200">
+                <input
+                  type="text"
+                  placeholder="Search for baby products, toys, accessories..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="w-full bg-transparent py-2.5 pl-6 pr-12 text-gray-600 placeholder-gray-400 focus:outline-none"
+                />
+                <button
+                  onClick={handleSearch}
+                  className="absolute right-1.5 p-3 bg-[#ff7010] hover:bg-[#e6650d] text-white cursor-pointer rounded-full transition-colors flex items-center justify-center shadow-md"
+                >
+                  <FaSearch className="text-sm" />
+                </button>
+              </div>
             </div>
 
-            {/* Call Info & Cart */}
             <div className="flex items-center space-x-6">
               {token && (
                 <Link
                   href={"/dashboard"}
-                  className="uppercase px-4 py-1 border rounded bg-slate-200 text-black"
+                  className="uppercase px-4 py-1 border rounded bg-slate-200 text-black hover:bg-slate-300 transition"
                 >
                   dashboard
                 </Link>
               )}
-              <a
-                href="https://wa.me/8801795072200"
-                target="_blank"
-                className="flex flex-col items-end"
-              >
-                <span className="text-sm text-gray-600">অর্ডার করতে কল করুন</span>
-                <span className="text-red-500 font-semibold">০১৭৯৫০৭২২০০</span>
-              </a>
 
-              <Link href="/checkout" className="relative">
-                <FaCartArrowDown className="text-2xl text-gray-700 hover:text-red-500" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
-                    {cartCount}
-                  </span>
-                )}
+              <Link
+                href="/checkout"
+                className="flex flex-col items-center group"
+              >
+                <div className="relative">
+                  <LucideShoppingCart className="text-2xl text-[#fc8934]" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-[#fc8934] text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-sm">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs font-bold text-gray-600 group-hover:text-[#fc8934] mt-0.5">
+                  Cart
+                </span>
               </Link>
             </div>
           </div>
@@ -162,7 +163,7 @@ export default function Navbar() {
             <Link
               key={category._id}
               href={`/products-category/${encodeURIComponent(category.name)}`}
-              className="text-black hover:text-[#fc8934]"
+              className="text-black hover:text-[#fc8934] transition-colors"
             >
               {category.name}
             </Link>
@@ -170,52 +171,71 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="fixed top-0 left-0 w-64 h-full bg-white shadow-lg p-6 z-50 flex flex-col space-y-6">
-          <button onClick={() => setIsOpen(false)} className="self-end">
-            <ImCross className="text-2xl cursor-pointer text-black" />
-          </button>
+      {/* --- Mobile Sidebar with Transition --- */}
+      <div
+        className={`fixed top-0 left-0 h-full bg-white shadow-2xl z-[60] flex flex-col p-6 transition-all duration-500 ease-in-out transform ${
+          isOpen
+            ? "translate-x-0 w-72"
+            : "-translate-x-full w-0 overflow-hidden"
+        }`}
+      >
+        <button onClick={() => setIsOpen(false)} className="self-end mb-6">
+          <ImCross className="text-xl cursor-pointer text-black hover:text-red-500 transition-colors" />
+        </button>
 
-          {/* Mobile Search */}
-          <div className="relative">
+        {/* Mobile Search inside Sidebar */}
+        <div className="px-2 mb-8">
+          <div className="relative w-full flex items-center bg-gray-50 rounded-full border border-gray-200 p-1">
             <input
               type="text"
-              placeholder="Search Products..."
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              className="w-full border border-gray-300 rounded-md py-2 pl-4 pr-10 focus:outline-none focus:border-blue-400"
+              className="w-full bg-transparent py-2 pl-4 pr-12 text-sm text-gray-600 focus:outline-none"
             />
-            <FaSearch
-              className="absolute right-3 top-3 text-gray-400 cursor-pointer"
+            <button
               onClick={handleSearch}
-            />
-          </div>
-
-          {token && (
-            <Link
-              href={"/dashboard"}
-              className="uppercase px-4 py-1 border rounded bg-slate-200 text-black"
+              className="absolute right-1 p-2.5 bg-[#ff7010] text-white rounded-full flex items-center justify-center"
             >
-              dashboard
-            </Link>
-          )}
-
-          {/* Mobile Categories */}
-          <div className="flex flex-col space-y-4 mt-4">
-            {categories.map((category) => (
-              <Link
-                key={category._id}
-                href={`/products-category/${encodeURIComponent(category.name)}`}
-                className="text-black text-base hover:text-red-500 bg-gray-200 pl-2 py-1"
-                onClick={() => setIsOpen(false)}
-              >
-                {category.name}
-              </Link>
-            ))}
+              <FaSearch className="text-xs" />
+            </button>
           </div>
         </div>
+
+        {token && (
+          <Link
+            href={"/dashboard"}
+            className="uppercase text-center px-4 py-2 mb-4 border rounded bg-slate-200 text-black font-semibold"
+            onClick={() => setIsOpen(false)}
+          >
+            dashboard
+          </Link>
+        )}
+
+        <p className="text-gray-400 text-xs font-bold uppercase mb-4 tracking-wider">
+          Categories
+        </p>
+        <div className="flex flex-col space-y-2 overflow-y-auto">
+          {categories.map((category) => (
+            <Link
+              key={category._id}
+              href={`/products-category/${encodeURIComponent(category.name)}`}
+              className="text-black text-base hover:bg-[#fc8934] hover:text-white bg-gray-50 px-4 py-2 rounded-md transition-all duration-300"
+              onClick={() => setIsOpen(false)}
+            >
+              {category.name}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Backdrop (Overlay) */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-[55] transition-opacity duration-300"
+          onClick={() => setIsOpen(false)}
+        />
       )}
     </>
   );
