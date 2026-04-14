@@ -49,7 +49,7 @@ export default function ClientLayout({ children }) {
                   <FaWhatsapp className="text-2xl" />
                 </a>
               </li>
-              <li> 
+              <li>
                 <a
                   href="https://m.me/kretarferiwala"
                   target="_blank"
