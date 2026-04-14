@@ -5,7 +5,7 @@ const OrderInvoicePrint = ({ order }) => {
 
   return (
     <div className="hidden print:block p-10 bg-white text-black min-h-screen">
-      {/* ইনভয়েস হেডার */}
+      {/* ইনভয়েস হেডার */}
       <div className="flex justify-between items-start border-b-2 border-gray-800 pb-6 mb-8">
         <div>
           <h1 className="text-4xl font-black text-black mb-2 leading-none">INVOICE</h1>
@@ -18,6 +18,13 @@ const OrderInvoicePrint = ({ order }) => {
           <h2 className="text-2xl text-gray-600 font-black uppercase tracking-tight">Kretarferiwala</h2>
           <p className="text-sm">ঢাকা, বাংলাদেশ</p>
           <p className="text-sm font-medium">পেমেন্ট মেথড: {order.paymentMethod}</p>
+          
+          {/* পেমেন্ট যদি bKash হয় তবে TrxID এখানে দেখাবে */}
+          {order.paymentMethod === "bKash" && order.transactionId && (
+            <p className="text-sm font-bold text-black-600 mt-1">
+              TrxID: {order.transactionId}
+            </p>
+          )}
         </div>
       </div>
 
@@ -26,10 +33,21 @@ const OrderInvoicePrint = ({ order }) => {
         <div>
           <h3 className="text-[10px] uppercase font-bold text-gray-400 mb-2 border-b pb-1">শিপিং ঠিকানা</h3>
           <p className="font-bold text-lg">{order.name}</p>
-          <p className="leading-relaxed text-gray-700">{order.address}</p>
+          <p className="leading-relaxed text-gray-700 whitespace-pre-line">{order.address}</p>
           <p className="font-bold mt-1">ফোন: {order.phone}</p>
         </div>
-       
+
+        {/* অর্ডার নোট সেকশন */}
+        <div>
+          {order.note && (
+            <>
+              <h3 className="text-[10px] uppercase font-bold text-gray-400 mb-2 border-b pb-1">অর্ডার নোট</h3>
+              <p className="italic text-gray-600 leading-relaxed">
+                "{order.note}"
+              </p>
+            </>
+          )}
+        </div>
       </div>
 
       {/* প্রোডাক্ট টেবিল */}
@@ -69,7 +87,7 @@ const OrderInvoicePrint = ({ order }) => {
           </div>
           <div className="flex justify-between text-xl font-black border-t-2 border-gray-800 pt-3">
             <span>সর্বমোট</span>
-            <span className="text-orange-600 leading-none">৳{order.totalAmount}</span>
+            <span className="text-black-600 leading-none">৳{order.totalAmount}</span>
           </div>
         </div>
       </div>

@@ -11,10 +11,10 @@ import {
   MdPayment,
   MdReceipt,
   MdPrint,
+  MdOutlineNoteAlt,
+  MdVpnKey,
 } from "react-icons/md";
 import OrderInvoicePrint from "@/components/print/orderInvoicePrint";
-
-
 
 const OrderDetailsPage = () => {
   const [order, setOrder] = useState(null);
@@ -60,7 +60,6 @@ const OrderDetailsPage = () => {
 
   return (
     <div className="min-h-screen py-10 px-4 md:px-8 mt-10 md:mt-16 bg-gray-50/50">
-     
       <OrderInvoicePrint order={order} />
 
       <div className="max-w-5xl mx-auto print:hidden">
@@ -80,15 +79,21 @@ const OrderDetailsPage = () => {
               <MdReceipt className="text-orange-500" /> অর্ডার আইডি: #
               {order.orderNumber}
             </h1>
-            <p className="text-gray-500 flex items-center gap-2 mt-1 font-medium">
-              <MdCalendarToday size={14} /> অর্ডার করার তারিখ:{" "}
-              {new Date(order.createdAt).toLocaleDateString("bn-BD")}
-            </p>
+            <div className="flex flex-wrap items-center gap-4 mt-1">
+              <p className="text-gray-500 flex items-center gap-2 font-medium">
+                <MdCalendarToday size={14} /> অর্ডার করার তারিখ:{" "}
+                {new Date(order.createdAt).toLocaleDateString("bn-BD")}
+              </p>
+              <span className="text-gray-300">|</span>
+              <p className="text-gray-500 font-medium">
+                সময়: {new Date(order.createdAt).toLocaleTimeString("bn-BD")}
+              </p>
+            </div>
           </div>
           <div className="flex gap-2">
             <span
               className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm border ${
-                order.status === "pending"
+                order.status === "pending" || order.status === "active"
                   ? "bg-amber-50 text-amber-600 border-amber-100"
                   : "bg-green-50 text-green-600 border-green-100"
               }`}
@@ -103,7 +108,7 @@ const OrderDetailsPage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {/* শিপিং তথ্য */}
+            {/* শিপিং ও কাস্টমার তথ্য */}
             <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
               <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <MdLocalShipping className="text-orange-500" /> শিপিং তথ্য
@@ -125,12 +130,22 @@ const OrderDetailsPage = () => {
                   <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">
                     ডেলিভারি ঠিকানা
                   </p>
-                  <p className="text-gray-800 font-medium leading-relaxed">
+                  <p className="text-gray-800 font-medium leading-relaxed whitespace-pre-line">
                     {order.address}
                   </p>
                 </div>
               </div>
             </div>
+
+            {/* অর্ডার নোট (যদি থাকে) */}
+            {order.note && (
+              <div className="bg-orange-50/50 rounded-[24px] p-6 border border-orange-100/50">
+                <h3 className="text-sm font-bold text-orange-800 mb-2 flex items-center gap-2">
+                  <MdOutlineNoteAlt /> কাস্টমার নোট:
+                </h3>
+                <p className="text-gray-700 italic text-sm">"{order.note}"</p>
+              </div>
+            )}
 
             {/* পণ্যসমূহ */}
             <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
@@ -175,12 +190,25 @@ const OrderDetailsPage = () => {
           </div>
 
           {/* পেমেন্ট সামারি */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <div className="bg-white rounded-[24px] p-6 shadow-md border border-gray-100 sticky top-28">
               <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
                 <MdPayment className="text-orange-500" /> পেমেন্ট সামারি
               </h3>
+              
               <div className="space-y-4">
+                {/* ট্রানজেকশন আইডি (বিকাশ হলে) */}
+                {order.transactionId && (
+                  <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 mb-4">
+                    <p className="text-[10px] uppercase font-bold text-gray-400 flex items-center gap-1 mb-1">
+                      <MdVpnKey size={12} /> Transaction ID
+                    </p>
+                    <p className="text-xs font-mono font-bold text-gray-700 break-all">
+                      {order.transactionId}
+                    </p>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-gray-500 font-medium">
                   <span>সাবটোটাল</span>
                   <span>৳{order.subTotal}</span>

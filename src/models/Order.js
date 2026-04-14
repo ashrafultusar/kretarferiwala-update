@@ -19,4 +19,4 @@ const OrderSchema = new mongoose.Schema({
     collection: "orders"
 });
 
-export default mongoose.models.Order || mongoose.model("Order", OrderSchema, "orders");
+export default mongoose.models.Order || mongoose.model("Order", OrderSchema, "orders"); 

@@ -29,8 +29,8 @@ const CheckoutPage = () => {
     name: "",
     phone: "",
     address: "",
-    note: "",
-    transactionId: "", 
+    note: "", // এখানে নোট স্টেট অলরেডি আছে
+    transactionId: "",
   });
 
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -191,6 +191,21 @@ const CheckoutPage = () => {
                 />
               </div>
 
+              {/* অর্ডার নোট সেকশন (নতুন যোগ করা হয়েছে) */}
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-gray-400 uppercase ml-1">
+                  অর্ডার নোট (ঐচ্ছিক)
+                </label>
+                <textarea
+                  name="note"
+                  value={formData.note}
+                  onChange={handleChange}
+                  rows="2"
+                  className="w-full border-gray-200 border rounded-2xl p-4 focus:ring-2 focus:ring-orange-400 outline-none transition-all"
+                  placeholder="ডেলিভারি সম্পর্কে কোনো বিশেষ তথ্য থাকলে লিখুন..."
+                />
+              </div>
+
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-gray-400 uppercase ml-1">
                   ডেলিভারি এরিয়া *
@@ -306,7 +321,7 @@ const CheckoutPage = () => {
                         required
                         value={formData.transactionId}
                         onChange={handleChange}
-                        placeholder="বিকাশ থেকে পাওয়া TrxID টি দিন"
+                        placeholder="বিকাশ থেকে পাওয়া TrxID টি দিন"
                         className="w-full border-gray-200 border rounded-xl p-4 text-sm outline-none focus:ring-2 focus:ring-pink-400 transition-all"
                       />
                     </div>

@@ -10,7 +10,7 @@ import { headers } from "next/headers";
 const sha256 = (str) => {
     if (!str) return "";
     return crypto.createHash("sha256").update(str.trim().toLowerCase()).digest("hex");
-};
+}; 
 
 // Meta Conversion API (CAPI) Integration
 async function sendMetaCAPIPurchaseEvent(order, ip, userAgent) {

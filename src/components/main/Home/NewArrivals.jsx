@@ -5,8 +5,7 @@ import ProductCard from "../../../Shared/ProductCard/ProductCard";
 import Link from "next/link";
 
 const NewArrivals = ({ data }) => {
-  // ১. ডাটা সর্ট করে লেটেস্ট ৫টি প্রোডাক্ট নেওয়া
-  // (ধরে নিচ্ছি আপনার ডাটাতে createdAt ফিল্ড আছে, না থাকলে slice(0, 5) সরাসরি ব্যবহার করুন)
+
   const recentProducts = [...data]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 5);
