@@ -77,11 +77,11 @@ export async function createOrderAction(orderData) {
         const ip = headersList.get("x-forwarded-for")?.split(',')[0] || "0.0.0.0";
         const userAgent = headersList.get("user-agent") || "";
 
-        // ব্যাকগ্রাউন্ডে ইভেন্ট পাঠানো (অর্ডার প্রসেস আটকাবে না)
-        sendMetaCAPIPurchaseEvent(createdOrder, ip, userAgent);
+        // ইভেন্ট পাঠানো (Vercel Serverless Function-এ await না করলে ব্যাকগ্রাউন্ড টাস্ক কিল হয়ে যায়)
+        await sendMetaCAPIPurchaseEvent(createdOrder, ip, userAgent);
 
-        // অ্যাডমিনকে নোটিফিকেশন ইমেইল পাঠানো (ব্যাকগ্রাউন্ডে)
-        sendAdminOrderEmail(createdOrder).catch((err) => console.error("Email Error:", err));
+        // অ্যাডমিনকে নোটিফিকেশন ইমেইল পাঠানো
+        await sendAdminOrderEmail(createdOrder).catch((err) => console.error("Email Error:", err));
 
         revalidatePath("/dashboard/orders");
 
