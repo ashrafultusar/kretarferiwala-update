@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductImageSlider from "@/components/ProductImageSlider/ProductImageSlider";
 import Link from "next/link";
 import TitleWithLine from "@/Shared/TitleWithLine/TitleWithLine";
@@ -29,6 +29,32 @@ const ProductDetailsClient = ({
     currentPage * productsPerPage
   );
 
+  // ViewContent tracking
+  useEffect(() => {
+    if (typeof window !== "undefined" && product) {
+      if (typeof window.fbq === "function") {
+        window.fbq("track", "ViewContent", {
+          content_name: product.name,
+          content_ids: [product._id],
+          value: product.discountPrice,
+          currency: "BDT",
+        });
+      }
+
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "view_item",
+        ecommerce: {
+          items: [{
+            item_name: product.name,
+            item_id: product._id,
+            price: product.discountPrice,
+          }]
+        }
+      });
+    }
+  }, [product]);
+
   const handleAddToCart = () => {
     setIsOrdering(true);
     const newProduct = {
@@ -56,6 +82,31 @@ const ProductDetailsClient = ({
     localStorage.setItem("checkoutCart", JSON.stringify(existingCart));
     window.dispatchEvent(new Event("cartUpdated"));
     setIsOrdering(false);
+
+    // Tracking Events
+    if (typeof window !== "undefined") {
+      if (typeof window.fbq === "function") {
+        window.fbq("track", "AddToCart", {
+          content_name: product.name,
+          content_ids: [product._id],
+          value: product.discountPrice,
+          currency: "BDT",
+        });
+      }
+
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "add_to_cart",
+        ecommerce: {
+          items: [{
+            item_name: product.name,
+            item_id: product._id,
+            price: product.discountPrice,
+            quantity: 1
+          }]
+        }
+      });
+    }
   };
 
   return (
@@ -150,21 +201,19 @@ const ProductDetailsClient = ({
         <div className="flex space-x-4 border-b">
           <button
             onClick={() => setActiveTab("description")}
-            className={`py-2 px-4 transition-all ${
-              activeTab === "description"
+            className={`py-2 px-4 transition-all ${activeTab === "description"
                 ? "border-b-2 border-green-600 text-green-600 font-semibold"
                 : "text-gray-500"
-            }`}
+              }`}
           >
             Description
           </button>
           <button
             onClick={() => setActiveTab("return")}
-            className={`py-2 px-4 transition-all ${
-              activeTab === "return"
+            className={`py-2 px-4 transition-all ${activeTab === "return"
                 ? "border-b-2 border-green-600 text-green-600 font-semibold"
                 : "text-gray-500"
-            }`}
+              }`}
           >
             Return Policy
           </button>
