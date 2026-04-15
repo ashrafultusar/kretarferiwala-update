@@ -16,7 +16,6 @@ export default function Slider({ data }) {
     const handleScroll = () => {
       setShowScrollButton(window.scrollY <= 50);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -56,14 +55,15 @@ export default function Slider({ data }) {
       >
         {data.map((image, index) => (
           <SwiperSlide key={image._id || index}>
-            <div className="relative w-full h-full">
+            {/* Parent-e 'relative' thaka khuboi dorkar */}
+            <div className="relative w-full h-full"> 
               <Image
                 src={image.imageUrl}
                 alt={`Slide ${index + 1}`}
                 fill
-                sizes="100vw"
+                sizes="100vw" // Eita browser-ke performance improve korte sahajjo kore
                 style={{ objectFit: "cover" }}
-                priority
+                priority={index === 0} // First image ke priority dile LCP bhalo hoy
               />
             </div>
           </SwiperSlide>

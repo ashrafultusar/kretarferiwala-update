@@ -3,9 +3,11 @@ import { Star, Quote } from 'lucide-react';
 import { connectDB } from "@/db/dbConfig";
 import { Review } from "@/models/Review";
 
+// Function er age 'async' keyword-ti add kora hoyeche
 const Testimonials = async () => {
-
+  
   await connectDB();
+  // Server-side fetch
   const reviews = await Review.find().sort({ createdAt: -1 }).limit(6);
 
   return (
@@ -26,7 +28,6 @@ const Testimonials = async () => {
           {reviews.map((item) => (
             <div key={item._id.toString()} className="bg-white rounded-[40px] p-8 shadow-sm border border-gray-50 flex flex-col justify-between hover:shadow-md transition-shadow">
               
-              {/* Star Rating & Quote Icon */}
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
@@ -40,12 +41,10 @@ const Testimonials = async () => {
                 <Quote className="text-gray-100 rotate-180" size={40} strokeWidth={1}/>
               </div>
 
-              {/* Review Text */}
               <p className="text-gray-600 text-base leading-relaxed mb-8">
                 {item.reviewText}
               </p>
 
-              {/* Customer Info */}
               <div className="flex items-center gap-4">
                 <img
                   src={item.avatar || "https://via.placeholder.com/40"}
@@ -65,9 +64,8 @@ const Testimonials = async () => {
           ))}
         </div>
 
-        {/* Empty State (Optional) */}
         {reviews.length === 0 && (
-          <p className="text-center text-gray-400">No reviews yet.</p>
+          <p className="text-center text-gray-400 mt-10">No reviews found yet.</p>
         )}
       </div>
     </div>
