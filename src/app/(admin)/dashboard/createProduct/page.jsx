@@ -20,6 +20,7 @@ export default function ProductForm() {
     regularPrice: "",
     discountPrice: "",
     images: [],
+    variantsInput: "",
   });
 
   // toggle category selection
@@ -46,6 +47,12 @@ export default function ProductForm() {
     const formData = new FormData();
     formData.append("name", product.name);
     product.category.forEach((cat) => formData.append("category", cat));
+
+    if (product.variantsInput) {
+      const variantsArr = product.variantsInput.split(",").map(v => v.trim()).filter(v => v !== "");
+      variantsArr.forEach((v) => formData.append("variants", v));
+    }
+
     formData.append("description", product.description);
     formData.append("regularPrice", product.regularPrice);
     formData.append("discountPrice", product.discountPrice);
@@ -63,6 +70,7 @@ export default function ProductForm() {
           regularPrice: "",
           discountPrice: "",
           images: [],
+          variantsInput: "",
         });
         router.push("/dashboard/allProducts");
       } else {
@@ -99,8 +107,8 @@ export default function ProductForm() {
                 key={cat._id}
                 onClick={() => toggleCategory(cat.name)}
                 className={`cursor-pointer border p-2 rounded text-center ${product.category.includes(cat.name)
-                    ? "bg-green-500 text-white border-green-500"
-                    : "bg-white text-black hover:bg-gray-100"
+                  ? "bg-green-500 text-white border-green-500"
+                  : "bg-white text-black hover:bg-gray-100"
                   }`}
               >
                 {cat.name}
@@ -117,6 +125,14 @@ export default function ProductForm() {
               setProduct({ ...product, description: e.target.value })
             }
             required
+          />
+
+          <input
+            type="text"
+            placeholder="Size / Color Options (comma separated, e.g. XL, L, Red)"
+            className="w-full border p-2 rounded border-orange-200 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+            value={product.variantsInput}
+            onChange={(e) => setProduct({ ...product, variantsInput: e.target.value })}
           />
 
           <div className="flex gap-4">

@@ -23,13 +23,15 @@ const AllCategories = ({ data }) => {
         <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
           Shop By <span className="text-orange-500">Categories</span>
         </h2>
-        <p className="text-gray-400 text-xs md:text-sm mt-1">Find exactly what you need</p>
+        <p className="text-gray-400 text-xs md:text-sm mt-1">
+          Find exactly what you need
+        </p>
       </div>
 
       {navigationReady && (
         <Swiper
-          slidesPerView={3} 
-          spaceBetween={12} 
+          slidesPerView={3}
+          spaceBetween={12}
           grabCursor={true}
           autoplay={{
             delay: 3000,
@@ -37,23 +39,22 @@ const AllCategories = ({ data }) => {
           }}
           modules={[Navigation, Autoplay]}
           breakpoints={{
-            // মোবাইল (০ থেকে ৪৮০ পিক্সেল) - ২টা স্লাইড
-            0: { 
+            0: {
               slidesPerView: 2,
-              spaceBetween: 10
+              spaceBetween: 10,
             },
-            // ট্যাবলেট - ৪টা স্লাইড
-            640: { 
+
+            640: {
               slidesPerView: 4,
-              spaceBetween: 15
+              spaceBetween: 15,
             },
-            // ডেস্কটপ - ৬টা স্লাইড
-            1024: { 
+
+            1024: {
               slidesPerView: 6,
-              spaceBetween: 20
+              spaceBetween: 20,
             },
           }}
-          className="pb-8 !h-auto" 
+          className="pb-8 !h-auto"
         >
           {data?.map((category) => (
             <SwiperSlide key={category._id} className="!h-auto">
@@ -63,7 +64,6 @@ const AllCategories = ({ data }) => {
               >
                 {/* কার্ডের প্যাডিং মোবাইলে কমানো হয়েছে (p-4 vs md:p-6) */}
                 <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-lg border border-gray-50 hover:border-orange-100 h-full min-h-[140px] md:min-h-[180px]">
-                  
                   {/* ইমেজের সাইজ মোবাইলে ছোট করা হয়েছে (w-16 vs md:w-24) */}
                   <div className="w-16 h-16 md:w-24 md:h-24 flex items-center justify-center bg-gray-50 rounded-xl md:rounded-2xl mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300 overflow-hidden shrink-0">
                     {category.image ? (
@@ -71,13 +71,13 @@ const AllCategories = ({ data }) => {
                         src={category.image}
                         alt={category.name}
                         width={45} // মোবাইলের জন্য ছোট উইডথ
-                        height={45} 
+                        height={45}
                         className="object-contain md:hidden" // শুধু মোবাইলের জন্য ছোট সাইজ
                       />
                     ) : (
                       <div className="w-10 h-10 bg-orange-50 rounded-full" />
                     )}
-                    
+
                     {/* ডেস্কটপের জন্য আগের সাইজ বজায় রাখা হয়েছে */}
                     {category.image && (
                       <Image
@@ -85,7 +85,7 @@ const AllCategories = ({ data }) => {
                         alt={category.name}
                         width={65}
                         height={65}
-                        className="object-contain hidden md:block" 
+                        className="object-contain hidden md:block"
                       />
                     )}
                   </div>
