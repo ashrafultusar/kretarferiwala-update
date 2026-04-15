@@ -21,11 +21,36 @@ export default function ProductCard({ id, name, regularPrice, discountPrice, ima
     }
     localStorage.setItem("checkoutCart", JSON.stringify(existingCart));
     window.dispatchEvent(new Event("cartUpdated"));
+
+    // Tracking Events
+    if (typeof window !== "undefined" && typeof window.fbq === "function") {
+      window.fbq("track", "AddToCart", {
+        content_name: name,
+        content_ids: [id],
+        value: discountPrice,
+        currency: "BDT",
+      });
+    }
+
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "add_to_cart",
+        ecommerce: {
+          items: [{
+            item_name: name,
+            item_id: id,
+            price: discountPrice,
+            quantity: 1
+          }]
+        }
+      });
+    }
   };
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col h-full border border-gray-100">
-      
+
       {/* Image Section */}
       <div className="relative aspect-square overflow-hidden bg-gray-50">
         <Link href={`/productdetails/${id}`}>
@@ -37,14 +62,14 @@ export default function ProductCard({ id, name, regularPrice, discountPrice, ima
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
         </Link>
-        
+
         {/* Discount Badge */}
         <div className="absolute top-3 left-3">
           <span className="bg-[#E91E63] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
             -{discountPercentage}%
           </span>
         </div>
-        
+
         {/* Hot Tag */}
         <div className="absolute top-3 right-3">
           <span className="bg-[#FFC107] text-white text-[10px] font-bold px-3 py-0.5 rounded-full uppercase">
