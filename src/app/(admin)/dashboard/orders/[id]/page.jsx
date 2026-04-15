@@ -92,11 +92,10 @@ const OrderDetailsPage = () => {
           </div>
           <div className="flex gap-2">
             <span
-              className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm border ${
-                order.status === "pending" || order.status === "active"
+              className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm border ${order.status === "pending" || order.status === "active"
                   ? "bg-amber-50 text-amber-600 border-amber-100"
                   : "bg-green-50 text-green-600 border-green-100"
-              }`}
+                }`}
             >
               {order.status}
             </span>
@@ -171,6 +170,11 @@ const OrderDetailsPage = () => {
                       <h4 className="text-sm font-bold text-gray-800 truncate">
                         {item.name}
                       </h4>
+                      {item.variant && (
+                        <p className="text-[10px] text-gray-500 font-bold uppercase mt-0.5">
+                          Option: {item.variant}
+                        </p>
+                      )}
                       <p className="text-xs text-gray-500 mt-1 font-medium italic">
                         পরিমাণ: {item.quantity} টি
                       </p>
@@ -195,7 +199,7 @@ const OrderDetailsPage = () => {
               <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
                 <MdPayment className="text-orange-500" /> পেমেন্ট সামারি
               </h3>
-              
+
               <div className="space-y-4">
                 {/* ট্রানজেকশন আইডি (বিকাশ হলে) */}
                 {order.transactionId && (
