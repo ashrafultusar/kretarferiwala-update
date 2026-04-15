@@ -35,6 +35,7 @@ export default function AdminNav({ children }) {
     { href: "/dashboard/orders", label: "Orders", icon: ShoppingBag },
     { href: "/dashboard/allProducts", label: "Products", icon: Package },
     { href: "/dashboard/categories", label: "Categories", icon: Layers },
+    { href: "/dashboard/review", label: "Review", icon: Layers },
     { href: "/dashboard/slider", label: "Home Slider", icon: HomeIcon },
     { href: "/dashboard/deliveryform", label: "Delivery Charges", icon: CarIcon },
     { href: "/dashboard/register", label: "Register", icon: User2Icon },
