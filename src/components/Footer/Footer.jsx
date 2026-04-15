@@ -29,14 +29,14 @@ const Footer = () => {
             essentials in Bangladesh.
           </p>
           <div className="flex items-center gap-3">
-            <a
-              href="#"
+            <a target="_blank"
+              href="https://www.facebook.com/kretarferiwala"
               className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 text-white transition-colors"
             >
               <FaFacebookF size={14} />
             </a>
-            <a
-              href="#"
+            <a target="_blank"
+              href="https://www.instagram.com/kretarferiwala"
               className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-gray-700 text-white transition-colors"
             >
               <FaInstagram size={14} />

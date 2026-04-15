@@ -7,6 +7,7 @@ import {
   MdOutlineLocalShipping,
   MdOutlineShoppingCart,
   MdAccountBalanceWallet,
+  MdInfo, // নতুন আইকন যোগ করা হয়েছে
 } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -29,7 +30,7 @@ const CheckoutPage = () => {
     name: "",
     phone: "",
     address: "",
-    note: "", // এখানে নোট স্টেট অলরেডি আছে
+    note: "",
     transactionId: "",
   });
 
@@ -59,16 +60,12 @@ const CheckoutPage = () => {
     };
     loadData();
 
-    // Tracking Events for Checkout Initialization
     if (typeof window !== "undefined") {
       if (typeof window.fbq === "function") {
         window.fbq("track", "InitiateCheckout");
       }
-
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "begin_checkout"
-      });
+      window.dataLayer.push({ event: "begin_checkout" });
     }
   }, []);
 
@@ -85,12 +82,10 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const phoneRegex = /^01[3-9]\d{8}$/;
     if (!phoneRegex.test(formData.phone)) {
       return toast.error("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন");
     }
-
     if (paymentMethod === "bKash" && !formData.transactionId) {
       return toast.error("বিকাশ ট্রানজেকশন আইডি দিন");
     }
@@ -113,7 +108,6 @@ const CheckoutPage = () => {
         setOrderSuccess(true);
         toast.success("অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!");
 
-        // Tracking Events for Search
         const itemIds = products.map((p) => p.id);
         if (typeof window !== "undefined") {
           if (typeof window.fbq === "function") {
@@ -123,21 +117,21 @@ const CheckoutPage = () => {
               currency: "BDT",
             });
           }
-
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push({
             event: "purchase",
             ecommerce: {
-              transaction_id: result.orderNumber || new Date().getTime().toString(),
+              transaction_id:
+                result.orderNumber || new Date().getTime().toString(),
               value: totalAmount,
               currency: "BDT",
-              items: products.map(p => ({
+              items: products.map((p) => ({
                 item_name: p.name,
                 item_id: p.id,
                 price: p.discountPrice,
-                quantity: p.quantity
-              }))
-            }
+                quantity: p.quantity,
+              })),
+            },
           });
         }
       } else {
@@ -184,6 +178,7 @@ const CheckoutPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* input fields start */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-gray-400 uppercase ml-1">
@@ -231,7 +226,6 @@ const CheckoutPage = () => {
                 />
               </div>
 
-              {/* অর্ডার নোট সেকশন (নতুন যোগ করা হয়েছে) */}
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-gray-400 uppercase ml-1">
                   অর্ডার নোট (ঐচ্ছিক)
@@ -275,17 +269,19 @@ const CheckoutPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div
                     onClick={() => setPaymentMethod("Cash on Delivery")}
-                    className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${paymentMethod === "Cash on Delivery"
+                    className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${
+                      paymentMethod === "Cash on Delivery"
                         ? "border-orange-500 bg-orange-50"
                         : "border-gray-100 hover:bg-gray-50"
-                      }`}
+                    }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "Cash on Delivery"
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          paymentMethod === "Cash on Delivery"
                             ? "border-orange-500"
                             : "border-gray-300"
-                          }`}
+                        }`}
                       >
                         {paymentMethod === "Cash on Delivery" && (
                           <div className="w-2.5 h-2.5 bg-orange-500 rounded-full"></div>
@@ -299,17 +295,19 @@ const CheckoutPage = () => {
 
                   <div
                     onClick={() => setPaymentMethod("bKash")}
-                    className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${paymentMethod === "bKash"
+                    className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${
+                      paymentMethod === "bKash"
                         ? "border-pink-500 bg-pink-50"
                         : "border-gray-100 hover:bg-gray-50"
-                      }`}
+                    }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "bKash"
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          paymentMethod === "bKash"
                             ? "border-pink-500"
                             : "border-gray-300"
-                          }`}
+                        }`}
                       >
                         {paymentMethod === "bKash" && (
                           <div className="w-2.5 h-2.5 bg-pink-500 rounded-full"></div>
@@ -318,24 +316,26 @@ const CheckoutPage = () => {
                       <span className="font-bold text-sm">bKash (Manual)</span>
                     </div>
                     <Image
-                      src="https://itshams.com/wp-content/uploads/2023/12/bkash-logo.png"
-                      width={40}
-                      height={20}
-                      alt="bkash"
+                      src="/bkash.png"
+                      width={25}
+                      height={25}
+                      alt="bKash"
+                      className="object-contain"
                       unoptimized
                     />
                   </div>
                 </div>
 
+                {/* bKash Section with Charge Warning */}
                 {paymentMethod === "bKash" && (
-                  <div className="p-6 bg-gradient-to-br from-pink-50 to-white border border-pink-100 rounded-3xl space-y-4 animate-in slide-in-from-top-2">
-                    <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-pink-200">
+                  <div className="p-5 bg-gradient-to-br from-pink-50 to-white border border-pink-100 rounded-3xl space-y-4 animate-in slide-in-from-top-2 duration-300">
+                    <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-pink-200 shadow-sm">
                       <div>
                         <p className="text-[10px] font-bold text-pink-400 uppercase">
                           বিকাশ পার্সোনাল নম্বর
                         </p>
                         <p className="text-xl font-black text-gray-800 tracking-wider">
-                          017XXXXXXXX
+                          01934100004
                         </p>
                       </div>
                       <div className="text-right">
@@ -347,6 +347,23 @@ const CheckoutPage = () => {
                         </p>
                       </div>
                     </div>
+
+                    {/* চার্জের বিশেষ দ্রষ্টব্য */}
+                    <div className="flex gap-3 bg-white/60 p-3 rounded-xl border border-pink-100 items-start">
+                      <MdInfo
+                        className="text-pink-500 shrink-0 mt-0.5"
+                        size={18}
+                      />
+                      <p className="text-[12px] text-gray-700 leading-tight">
+                        <span className="font-bold text-pink-600 underline">
+                          বিশেষ দ্রষ্টব্য:
+                        </span>{" "}
+                        বিকাশ পেমেন্ট করার ক্ষেত্রে অবশ্যই{" "}
+                        <strong>ক্যাশ আউট চার্জসহ</strong> পেমেন্ট সম্পন্ন
+                        করবেন।
+                      </p>
+                    </div>
+
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-gray-400 uppercase ml-1">
                         ট্রানজেকশন আইডি (TrxID) *
@@ -358,7 +375,7 @@ const CheckoutPage = () => {
                         value={formData.transactionId}
                         onChange={handleChange}
                         placeholder="বিকাশ থেকে পাওয়া TrxID টি দিন"
-                        className="w-full border-gray-200 border rounded-xl p-4 text-sm outline-none focus:ring-2 focus:ring-pink-400 transition-all"
+                        className="w-full border-gray-200 border rounded-xl p-4 text-sm outline-none focus:ring-2 focus:ring-pink-400 transition-all shadow-inner"
                       />
                     </div>
                   </div>
@@ -368,10 +385,11 @@ const CheckoutPage = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full text-white font-black py-5 rounded-2xl shadow-lg transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 ${isSubmitting
+                className={`w-full text-white font-black py-5 rounded-2xl cursor-pointer shadow-lg transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 ${
+                  isSubmitting
                     ? "bg-gray-400"
                     : "bg-orange-500 hover:bg-orange-600"
-                  }`}
+                }`}
               >
                 {isSubmitting ? "অর্ডার প্রসেস হচ্ছে..." : "অর্ডার কনফর্ম করুন"}
               </button>
@@ -483,7 +501,7 @@ const CheckoutPage = () => {
               </div>
               <button
                 onClick={() => router.push("/")}
-                className="w-full bg-black text-white font-black py-4 rounded-2xl uppercase text-sm tracking-widest"
+                className="w-full cursor-pointer bg-black text-white font-black py-4 rounded-2xl uppercase text-sm tracking-widest"
               >
                 ঠিক আছে
               </button>
