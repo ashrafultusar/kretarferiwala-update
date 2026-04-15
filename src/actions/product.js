@@ -39,11 +39,17 @@ export async function addProduct(prevState, formData) {
         const regularPrice = formData.get("regularPrice");
         const discountPrice = formData.get("discountPrice");
 
-        // category can be multiple
         let category = formData.getAll("category");
         if (!category || category.length === 0) {
             const catVal = formData.get("category");
             if (catVal) category = [catVal];
+        }
+
+        // variants
+        let variants = formData.getAll("variants");
+        if (!variants || variants.length === 0) {
+            const varVal = formData.get("variants");
+            if (varVal) variants = [varVal];
         }
 
         // Process images
@@ -68,6 +74,7 @@ export async function addProduct(prevState, formData) {
             regularPrice: regularPrice ? Number(regularPrice) : 0,
             discountPrice: discountPrice ? Number(discountPrice) : 0,
             images: imageUrls,
+            variants,
         });
 
         revalidatePath("/dashboard/allProducts"); // Update dashboard table
@@ -103,6 +110,12 @@ export async function editProduct(id, prevState, formData) {
             if (catVal) category = [catVal];
         }
 
+        let variants = formData.getAll("variants");
+        if (!variants || variants.length === 0) {
+            const varVal = formData.get("variants");
+            if (varVal) variants = [varVal];
+        }
+
         // Preserve existing images
         let existingImages = formData.getAll("existingImages");
         if (existingImages.length === 1 && existingImages[0].includes(',')) {
@@ -134,6 +147,7 @@ export async function editProduct(id, prevState, formData) {
                 regularPrice: regularPrice ? Number(regularPrice) : 0,
                 discountPrice: discountPrice ? Number(discountPrice) : 0,
                 images: finalImages,
+                variants,
             },
             { new: true }
         );

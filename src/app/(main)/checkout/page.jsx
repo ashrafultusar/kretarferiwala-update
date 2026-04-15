@@ -269,19 +269,17 @@ const CheckoutPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div
                     onClick={() => setPaymentMethod("Cash on Delivery")}
-                    className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${
-                      paymentMethod === "Cash on Delivery"
+                    className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${paymentMethod === "Cash on Delivery"
                         ? "border-orange-500 bg-orange-50"
                         : "border-gray-100 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          paymentMethod === "Cash on Delivery"
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "Cash on Delivery"
                             ? "border-orange-500"
                             : "border-gray-300"
-                        }`}
+                          }`}
                       >
                         {paymentMethod === "Cash on Delivery" && (
                           <div className="w-2.5 h-2.5 bg-orange-500 rounded-full"></div>
@@ -295,19 +293,17 @@ const CheckoutPage = () => {
 
                   <div
                     onClick={() => setPaymentMethod("bKash")}
-                    className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${
-                      paymentMethod === "bKash"
+                    className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${paymentMethod === "bKash"
                         ? "border-pink-500 bg-pink-50"
                         : "border-gray-100 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          paymentMethod === "bKash"
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "bKash"
                             ? "border-pink-500"
                             : "border-gray-300"
-                        }`}
+                          }`}
                       >
                         {paymentMethod === "bKash" && (
                           <div className="w-2.5 h-2.5 bg-pink-500 rounded-full"></div>
@@ -385,11 +381,10 @@ const CheckoutPage = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full text-white font-black py-5 rounded-2xl cursor-pointer shadow-lg transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 ${
-                  isSubmitting
+                className={`w-full text-white font-black py-5 rounded-2xl cursor-pointer shadow-lg transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 ${isSubmitting
                     ? "bg-gray-400"
                     : "bg-orange-500 hover:bg-orange-600"
-                }`}
+                  }`}
               >
                 {isSubmitting ? "অর্ডার প্রসেস হচ্ছে..." : "অর্ডার কনফর্ম করুন"}
               </button>
@@ -424,7 +419,12 @@ const CheckoutPage = () => {
                       <h3 className="text-xs font-bold line-clamp-1 text-gray-800">
                         {p.name}
                       </h3>
-                      <p className="text-orange-600 font-black text-sm">
+                      {p.variant && (
+                        <p className="text-[10px] text-gray-500 font-bold uppercase mt-0.5">
+                          Option: {p.variant}
+                        </p>
+                      )}
+                      <p className="text-orange-600 font-black text-sm mt-1">
                         ৳{p.discountPrice} x {p.quantity}
                       </p>
                     </div>

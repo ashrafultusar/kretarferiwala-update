@@ -24,7 +24,8 @@ export default function EditProductForm() {
     regularPrice: "",
     discountPrice: "",
     images: [],
-    existingImages: [], // store existing image URLs
+    existingImages: [],
+    variantsInput: "",
   });
 
   // Fetch product data on mount
@@ -42,6 +43,7 @@ export default function EditProductForm() {
             discountPrice: data.discountPrice,
             images: [],
             existingImages: data.images || [],
+            variantsInput: data.variants ? data.variants.join(", ") : "",
           });
         } // close the if block
       } catch (err) {
@@ -76,6 +78,12 @@ export default function EditProductForm() {
     const formData = new FormData();
     formData.append("name", product.name);
     product.category.forEach((cat) => formData.append("category", cat));
+
+    if (product.variantsInput) {
+      const variantsArr = product.variantsInput.split(",").map(v => v.trim()).filter(v => v !== "");
+      variantsArr.forEach((v) => formData.append("variants", v));
+    }
+
     formData.append("description", product.description);
     formData.append("regularPrice", product.regularPrice.toString());
     formData.append("discountPrice", product.discountPrice.toString());
@@ -147,6 +155,14 @@ export default function EditProductForm() {
               setProduct({ ...product, description: e.target.value })
             }
             required
+          />
+
+          <input
+            type="text"
+            placeholder="Size / Color Options (comma separated, e.g. XL, L, Red)"
+            className="w-full border p-2 rounded border-orange-200 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+            value={product.variantsInput}
+            onChange={(e) => setProduct({ ...product, variantsInput: e.target.value })}
           />
 
           <div className="flex gap-4">
