@@ -16,6 +16,11 @@ const ProductDetailsClient = ({
   const [activeTab, setActiveTab] = useState("description");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedArea, setSelectedArea] = useState("outsideDhaka"); // Default Outside Dhaka
+  const [selectedVariant, setSelectedVariant] = useState(
+    initialProduct?.variants && initialProduct.variants.length > 0
+      ? initialProduct.variants[0]
+      : ""
+  );
   const productsPerPage = 12;
 
   const product = initialProduct;
@@ -57,13 +62,16 @@ const ProductDetailsClient = ({
 
   const handleAddToCart = () => {
     setIsOrdering(true);
+    const cartItemId = selectedVariant ? `${product._id}-${selectedVariant}` : product._id;
     const newProduct = {
-      id: product._id,
+      id: cartItemId,
+      productId: product._id,
       name: product.name,
       regularPrice: product.regularPrice,
       discountPrice: product.discountPrice,
       image: product.images?.[0] || "/placeholder.png",
       quantity: 1,
+      variant: selectedVariant,
     };
 
     const existingCart = JSON.parse(
@@ -143,6 +151,26 @@ const ProductDetailsClient = ({
             </Link>
           </div>
 
+          {product.variants && product.variants.length > 0 && (
+            <div className="mt-4">
+
+              <div className="flex flex-wrap gap-2">
+                {product.variants.map((variant, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedVariant(variant)}
+                    className={`px-3 py-1 border rounded-md font-medium transition-all cursor-pointer ${selectedVariant === variant
+                      ? "bg-[#ffb900] text-white border-[#ffb900]"
+                      : "bg-white text-gray-700 border-gray-300 hover:border-[#ffb900]"
+                      }`}
+                  >
+                    {variant}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <a
             href="https://wa.me/8801795072200"
             className="w-full text-center bg-blue-100 text-black py-3 rounded shadow font-medium"
@@ -202,8 +230,8 @@ const ProductDetailsClient = ({
           <button
             onClick={() => setActiveTab("description")}
             className={`py-2 px-4 transition-all ${activeTab === "description"
-                ? "border-b-2 border-green-600 text-green-600 font-semibold"
-                : "text-gray-500"
+              ? "border-b-2 border-green-600 text-green-600 font-semibold"
+              : "text-gray-500"
               }`}
           >
             Description
@@ -211,8 +239,8 @@ const ProductDetailsClient = ({
           <button
             onClick={() => setActiveTab("return")}
             className={`py-2 px-4 transition-all ${activeTab === "return"
-                ? "border-b-2 border-green-600 text-green-600 font-semibold"
-                : "text-gray-500"
+              ? "border-b-2 border-green-600 text-green-600 font-semibold"
+              : "text-gray-500"
               }`}
           >
             Return Policy
