@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useCategories from "../../hooks/useCategories";
 import { LucideShoppingCart } from "lucide-react";
+import { getSession } from "next-auth/react";
 
 export default function Navbar() {
   const { categories } = useCategories();
@@ -18,11 +19,19 @@ export default function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [cartCount, setCartCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [token, setToken] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    setToken(localStorage.getItem("token"));
+    const checkAdmin = async () => {
+      const session = await getSession();
+      if (session?.user) {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(!!localStorage.getItem("token"));
+      }
+    };
+    checkAdmin();
   }, []);
 
   const handleSearch = () => {
@@ -61,9 +70,8 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`bg-white shadow-md px-4 py-3 fixed top-0 left-0 w-full z-50 transition-transform duration-300 ${
-          scrollDirection === "down" ? "-translate-y-full" : "translate-y-0"
-        }`}
+        className={`bg-white shadow-md px-4 py-3 fixed top-0 left-0 w-full z-50 transition-transform duration-300 ${scrollDirection === "down" ? "-translate-y-full" : "translate-y-0"
+          }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* --- Mobile View Header --- */}
@@ -128,7 +136,7 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center space-x-6">
-              {token && (
+              {isAdmin && (
                 <Link
                   href={"/dashboard"}
                   className="uppercase px-4 py-1 border rounded bg-slate-200 text-black hover:bg-slate-300 transition"
@@ -173,11 +181,10 @@ export default function Navbar() {
 
       {/* --- Mobile Sidebar with Transition --- */}
       <div
-        className={`fixed top-0 left-0 h-full bg-white shadow-2xl z-[60] flex flex-col p-6 transition-all duration-500 ease-in-out transform ${
-          isOpen
+        className={`fixed top-0 left-0 h-full bg-white shadow-2xl z-[60] flex flex-col p-6 transition-all duration-500 ease-in-out transform ${isOpen
             ? "translate-x-0 w-72"
             : "-translate-x-full w-0 overflow-hidden"
-        }`}
+          }`}
       >
         <button onClick={() => setIsOpen(false)} className="self-end mb-6">
           <ImCross className="text-xl cursor-pointer text-black hover:text-red-500 transition-colors" />
@@ -203,7 +210,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {token && (
+        {isAdmin && (
           <Link
             href={"/dashboard"}
             className="uppercase text-center px-4 py-2 mb-4 border rounded bg-slate-200 text-black font-semibold"

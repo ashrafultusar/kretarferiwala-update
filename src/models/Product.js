@@ -7,6 +7,7 @@ const ProductSchema = new mongoose.Schema({
     regularPrice: { type: Number },
     discountPrice: { type: Number },
     images: { type: [String], default: [] },
+    variants: { type: [String], default: [] },
 }, {
     timestamps: true,
     collection: "products" // Default is products, ensuring exact match
