@@ -27,35 +27,35 @@ async function uploadImage(file) {
     });
 }
 export async function createReview(formData) {
-  try {
-      await connectDB();
+    try {
+        await connectDB();
 
-      const name = formData.get("name");
-      const rating = formData.get("rating");
-      const reviewText = formData.get("reviewText");
-      const imageFile = formData.get("avatar");
+        const name = formData.get("name");
+        const rating = formData.get("rating");
+        const reviewText = formData.get("reviewText");
+        const imageFile = formData.get("avatar");
 
-      let avatarUrl = "https://via.placeholder.com/40";
+        let avatarUrl = "https://via.placeholder.com/40";
 
-      if (imageFile && imageFile.size > 0) {
-          avatarUrl = await uploadImage(imageFile);
-      }
+        if (imageFile && imageFile.size > 0) {
+            avatarUrl = await uploadImage(imageFile);
+        }
 
-      await Review.create({
-          name,
-          rating: Number(rating),
-          reviewText,
-          avatar: avatarUrl,
-      });
+        await Review.create({
+            name,
+            rating: Number(rating),
+            reviewText,
+            avatar: avatarUrl,
+        });
 
-      revalidatePath("/dashboard/review");
-      revalidatePath("/");
+        revalidatePath("/dashboard/review");
+        revalidatePath("/");
 
-      return { success: true, message: "Review added successfully!" };
-  } catch (error) {
-      console.error("Server Error:", error);
-      return { success: false, message: "Failed to add review." };
-  }
+        return { success: true, message: "Review added successfully!" };
+    } catch (error) {
+        console.error("Server Error:", error);
+        return { success: false, message: "Failed to add review." };
+    }
 }
 
 
@@ -63,12 +63,13 @@ export async function deleteReview(id) {
     try {
         await connectDB();
         await Review.findByIdAndDelete(id);
-        
+
         revalidatePath("/dashboard/review");
         revalidatePath("/");
-        
+
         return { success: true, message: "Review deleted!" };
     } catch (error) {
+        console.error("Delete Error:", error);
         return { success: false, message: "Delete failed." };
     }
 }
