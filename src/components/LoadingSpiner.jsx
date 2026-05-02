@@ -20,6 +20,8 @@ const LoadingSpinner = ({ onFinish }) => {
     return () => clearInterval(timer);
   }, [onFinish]);
 
+
+  
   // SVG circle calculation
   const radius = 50;
   const circumference = 2 * Math.PI * radius;
