@@ -1,40 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
 import Image from "next/image";
 
-const LoadingSpinner = ({ onFinish }) => {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    // Speed optimized: 30ms interval for faster completion
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          if (onFinish) onFinish();
-          return 100;
-        }
-        return prev + 2.5; // Slightly higher increment for smoothness
-      });
-    }, 30); 
-
-    return () => clearInterval(timer);
-  }, [onFinish]);
-
-  const radius = 50;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
-
+const LoadingSpinner = () => {
   return (
-    <div className="flex items-center justify-center h-screen bg-[#0f172a]"> 
-      {/* Dark background for premium look */}
+    <div className="flex items-center justify-center h-screen bg-white">
       <div className="relative w-48 h-48 flex items-center justify-center">
         
         {/* Decorative Glow */}
-        <div className="absolute inset-0 bg-orange-500/20 blur-[60px] rounded-full animate-pulse"></div>
+        <div className="absolute inset-0 bg-orange-500/10 blur-[60px] rounded-full animate-pulse"></div>
 
         <svg
-          className="absolute top-0 left-0 w-full h-full transform -rotate-90"
+          className="absolute top-0 left-0 w-full h-full animate-spin"
           viewBox="0 0 120 120"
         >
           <defs>
@@ -44,36 +20,32 @@ const LoadingSpinner = ({ onFinish }) => {
             </linearGradient>
           </defs>
 
-          {/* Background circle (Glass effect) */}
+          {/* Background circle */}
           <circle
             cx="60"
             cy="60"
-            r={radius}
-            stroke="#1e293b"
+            r="50"
+            stroke="#e2e8f0"
             strokeWidth="4"
             fill="none"
           />
 
-          {/* Animated progress circle */}
+          {/* Animated spinner arc */}
           <circle
             cx="60"
             cy="60"
-            r={radius}
+            r="50"
             stroke="url(#gradient)"
             strokeWidth="6"
             fill="none"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
+            strokeDasharray="80 150" 
             strokeLinecap="round"
-            className="drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"
-            style={{
-              transition: "stroke-dashoffset 0.05s linear",
-            }}
+            className="drop-shadow-md"
           />
         </svg>
 
-        {/* Central Logo with Pulse */}
-        <div className="relative w-16 h-16 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-full border border-white/20 shadow-2xl animate-logo-pop">
+        {/* Central Logo */}
+        <div className="relative w-16 h-16 flex items-center justify-center bg-white rounded-full border border-gray-100 shadow-xl animate-logo-pop">
           <Image
             src="/logo_icon/logo.png"
             alt="Logo"
