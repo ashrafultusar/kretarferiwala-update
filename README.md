@@ -1,4 +1,4 @@
-LIVE LINK : https://kreterferiwala.vercel.app
+LIVE LINK : kretarferiwalashop.com
 
 
 
