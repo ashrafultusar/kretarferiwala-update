@@ -53,3 +53,38 @@ export async function getSearchedProducts(queryStr) {
         return { success: false, products: [] };
     }
 }
+
+export async function getPagedProducts({ category = "all", page = 1, limit = 20 }) {
+    try {
+        await connectDB();
+
+        let query = {};
+        if (category && category !== "all") {
+            // Check array of categories or exact string
+            query.category = { $in: [category] };
+        }
+
+        const skip = (page - 1) * limit;
+
+        const [products, totalCategoryProducts, overallTotalProducts, distinctCategories] = await Promise.all([
+            Product.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+            Product.countDocuments(query),
+            Product.countDocuments(),
+            Product.distinct("category")
+        ]);
+
+        let uniqueCategories = Array.from(new Set(distinctCategories.flat())).filter(Boolean);
+
+        return {
+            success: true,
+            products: JSON.parse(JSON.stringify(products)),
+            totalProducts: totalCategoryProducts,
+            overallTotalProducts,
+            categories: uniqueCategories,
+            totalPages: Math.ceil(totalCategoryProducts / limit)
+        };
+    } catch (error) {
+        console.error("Error fetching paged products:", error);
+        return { success: false, products: [], totalProducts: 0, overallTotalProducts: 0, categories: [], totalPages: 0 };
+    }
+}

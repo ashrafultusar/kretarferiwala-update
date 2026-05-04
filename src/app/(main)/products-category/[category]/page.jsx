@@ -1,16 +1,8 @@
-"use client";
-
-import LoadingPage from "@/app/loading";
-import useProducts from "@/hooks/useProducts";
 import ProductCard from "@/Shared/ProductCard/ProductCard";
-import { useParams } from "next/navigation";
+import { getProductsByCategory } from "@/lib/data/product";
 
-export default function CategoryPage() {
-  const params = useParams();
-  const category = params.category;
-  const { products, loading } = useProducts();
-
-  if (loading) return <LoadingPage />;
+export default async function CategoryPage({ params }) {
+  const { category } = await params;
 
   if (!category) {
     return (
@@ -20,11 +12,10 @@ export default function CategoryPage() {
     );
   }
 
-  const decodedCategory = decodeURIComponent(category);
+  const decodedCategory = decodeURIComponent(category).trim();
 
-  const filteredProducts = products.filter(
-    (product) => product.category === decodedCategory
-  );
+  // Fetch directly from DB via Mongoose avoiding external fetch errors
+  const filteredProducts = await getProductsByCategory(category);
 
   return (
     <div className="max-w-7xl mx-auto p-6 mt-32">
@@ -32,7 +23,7 @@ export default function CategoryPage() {
         Category / <span className="font-medium">{decodedCategory}</span>
       </h1>
 
-      {filteredProducts.length > 0 ? (
+      {filteredProducts && filteredProducts.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
             <ProductCard
@@ -41,7 +32,7 @@ export default function CategoryPage() {
               name={product.name}
               regularPrice={product.regularPrice}
               discountPrice={product.discountPrice}
-              image={product.images[0]}
+              image={product.images && product.images.length > 0 ? product.images[0] : ""}
             />
           ))}
         </div>

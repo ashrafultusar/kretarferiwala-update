@@ -27,6 +27,13 @@ const ProductDetailsClient = ({
   const relatedProducts = initialRelated;
   const deliveryCharge = initialDelivery;
 
+  const subDhakaAreasList = deliveryCharge?.subDhakaAreas
+    ? deliveryCharge.subDhakaAreas
+      .split(",")
+      .map((a) => a.trim())
+      .filter((a) => a !== "")
+    : [];
+
   // Pagination Logic
   const totalPages = Math.ceil(relatedProducts.length / productsPerPage);
   const paginatedProducts = relatedProducts.slice(
@@ -213,6 +220,17 @@ const ProductDetailsClient = ({
               <option value="insideDhaka">ঢাকার ভিতরে</option>
               <option value="subDhaka">ঢাকার পার্শ্ববর্তী (Sub Dhaka)</option>
             </select>
+
+            {selectedArea === "subDhaka" && subDhakaAreasList.length > 0 && (
+              <div className="pt-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  সাব-ঢাকা এরিয়া সমূহ:
+                </label>
+                <p className="text-sm text-gray-600 bg-white p-2.5 rounded-md border text-center">
+                  {subDhakaAreasList.join(", ")}
+                </p>
+              </div>
+            )}
 
             <div className="flex justify-between items-center pt-2 border-t border-dashed border-gray-300">
               <span className="text-sm font-medium text-gray-600">ডেলিভারি খরচ:</span>
