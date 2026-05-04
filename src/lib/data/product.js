@@ -32,3 +32,22 @@ export async function getFullProductData(id) {
     return null;
   }
 }
+
+export async function getProductsByCategory(categoryName) {
+  try {
+    await connectDB();
+    const decodedCategory = decodeURIComponent(categoryName).trim();
+    // Use regex to catch case-insensitive matches effectively
+    const regex = new RegExp(`^${decodedCategory}$`, "i");
+
+    // Sometimes category might have a trailing space in DB or vice versa, so we can also query the exact decodedCategory or regex.
+    const products = await Product.find({
+      category: { $in: [regex, decodedCategory, `${decodedCategory} `] }
+    }).lean();
+
+    return JSON.parse(JSON.stringify(products));
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}

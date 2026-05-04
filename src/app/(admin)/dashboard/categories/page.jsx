@@ -5,7 +5,7 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { MdDeleteOutline } from "react-icons/md";
-import { Upload } from "lucide-react";
+import { Upload, Image as ImageIcon } from "lucide-react";
 import { addCategory, deleteCategory } from "@/actions/category";
 import { getAllCategories } from "@/lib/data/category";
 
@@ -15,6 +15,7 @@ const CategoryPage = () => {
   const [categoryImage, setCategoryImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -26,9 +27,10 @@ const CategoryPage = () => {
       } catch (err) {
         console.error(err);
         toast.error("Failed to load categories");
+      } finally {
+        setIsFetching(false);
       }
     };
-
     fetchCategories();
   }, []);
 
@@ -43,7 +45,6 @@ const CategoryPage = () => {
     setIsLoading(true);
     try {
       const res = await addCategory(null, formData);
-
       if (res.success) {
         setCategories((prev) => [...prev, res.category]);
         setCategory("");
@@ -70,9 +71,9 @@ const CategoryPage = () => {
   };
 
   const handleDelete = async (id, index) => {
+    if (!confirm("Delete this category?")) return;
     try {
       const res = await deleteCategory(id);
-
       if (res.success) {
         setCategories((prev) => prev.filter((c) => c._id !== id));
         toast.success(res.message || "Category deleted");
@@ -86,97 +87,118 @@ const CategoryPage = () => {
   };
 
   return (
-    <div>
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          {/* Add New Category */}
-          <div className="bg-[#f3f4f6] w-full lg:w-1/2 shadow-md rounded-lg p-6">
-            <h2 className="text-2xl font-semibold mb-4 text-center">
-              Add New Category
+    <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8 border-b border-gray-200 pb-4">Category Management</h1>
+
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* Add New Category Panel */}
+          <div className="bg-white w-full lg:w-1/3 shadow-sm border border-gray-100 rounded-2xl p-6 hover:shadow-md transition-shadow">
+            <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+              <span className="bg-orange-100 p-2 rounded-lg text-[#ff6900]"><Upload size={20} /></span>
+              Add Category
             </h2>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input
-                type="text"
-                placeholder="Enter category name"
-                className="border p-2 rounded"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
-              <div className="relative">
-                <label
-                  htmlFor="categoryImage"
-                  className="flex items-center gap-2 border p-2 rounded cursor-pointer text-gray-700 hover:bg-orange-50"
-                >
-                  <Upload className="w-5 h-5 text-black" />
-                  <span>Select Category Image</span>
-                </label>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <div>
+                <label className="block text-sm font-semibold text-gray-600 mb-2">Category Name</label>
                 <input
-                  id="categoryImage"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
+                  type="text"
+                  placeholder="e.g. Electronics, Clothing"
+                  className="w-full border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#ff6900] focus:border-transparent transition"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
                 />
               </div>
-              {imagePreview && (
-                <Image
-                  src={imagePreview}
-                  alt="Preview"
-                  width={80}
-                  height={80}
-                  className="rounded"
-                />
-              )}
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-600 mb-2">Category Image</label>
+                <div className="relative">
+                  <label
+                    htmlFor="categoryImage"
+                    className={`flex flex-col items-center justify-center gap-3 border-2 border-dashed p-6 rounded-xl cursor-pointer transition-all ${imagePreview ? "border-[#ff6900] bg-orange-50" : "border-gray-300 hover:border-[#ff6900] hover:bg-orange-50"
+                      }`}
+                  >
+                    {imagePreview ? (
+                      <div className="relative w-full h-24 rounded-lg overflow-hidden shadow-sm">
+                        <Image src={imagePreview} alt="Preview" fill className="object-cover" />
+                      </div>
+                    ) : (
+                      <>
+                        <ImageIcon className="w-8 h-8 text-gray-400" />
+                        <span className="text-sm text-gray-500 font-medium">Click to upload image</span>
+                      </>
+                    )}
+                  </label>
+                  <input
+                    id="categoryImage"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+
               <button
                 type="submit"
-                className="bg-[#0f766e] text-white px-4 py-2 rounded cursor-pointer flex justify-center items-center"
+                disabled={isLoading || !category.trim() || !categoryImage}
+                className="mt-2 bg-[#ff6900] text-white px-4 py-3 rounded-xl font-bold cursor-pointer hover:bg-[#e65c00] transition-colors flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
               >
                 {isLoading ? (
                   <AiOutlineLoading3Quarters className="animate-spin h-5 w-5 text-white" />
                 ) : (
-                  "Add"
+                  "Create Category"
                 )}
               </button>
             </form>
           </div>
 
           {/* Display Categories */}
-          <div className="bg-[#f3f4f6] w-full lg:w-1/2 shadow-md rounded-lg p-6">
-            <h3 className="text-2xl font-semibold mb-4 text-center">
-              All Categories
+          <div className="bg-white w-full lg:w-2/3 shadow-sm border border-gray-100 rounded-2xl p-6">
+            <h3 className="text-xl font-bold mb-6 text-gray-800 flex items-center justify-between">
+              <div>All Categories</div>
+              <span className="text-sm font-semibold bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg">{categories.length} items</span>
             </h3>
-            {categories.length === 0 ? (
-              <p className="text-gray-600 text-center">
-                No categories added yet.
-              </p>
+
+            {isFetching ? (
+              <div className="flex justify-center items-center h-40">
+                <AiOutlineLoading3Quarters className="animate-spin h-8 w-8 text-[#ff6900]" />
+              </div>
+            ) : categories.length === 0 ? (
+              <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                <p className="text-gray-500 font-medium">No categories added yet.</p>
+              </div>
             ) : (
-              <ul className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                 {categories.map((cat, index) => (
-                  <li
-                    key={index}
-                    className="flex justify-between items-center px-4 py-2 rounded bg-white shadow-sm"
+                  <div
+                    key={cat._id || index}
+                    className="flex justify-between items-center p-3 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all bg-white group"
                   >
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={cat.image}
-                        alt={cat.name}
-                        width={40}
-                        height={40}
-                        className="rounded object-cover"
-                      />
-                      <span className="text-gray-800 font-medium">
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                        <Image
+                          src={cat.image}
+                          alt={cat.name}
+                          fill
+                          sizes="64px"
+                          className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+                      <span className="text-gray-800 font-bold text-lg">
                         {cat.name}
                       </span>
                     </div>
                     <button
                       onClick={() => handleDelete(cat._id, index)}
-                      className="text-red-500 px-3 rounded-md py-2 text-sm font-semibold cursor-pointer"
+                      className="text-gray-400 p-2 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors cursor-pointer"
+                      title="Delete Category"
                     >
                       <MdDeleteOutline className="text-2xl" />
                     </button>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
         </div>

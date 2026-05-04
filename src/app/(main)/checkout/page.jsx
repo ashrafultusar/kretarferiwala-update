@@ -20,8 +20,10 @@ const CheckoutPage = () => {
     insideDhaka: 70,
     subDhaka: 100,
     outsideDhaka: 150,
+    subDhakaAreasList: [],
   });
   const [selectedArea, setSelectedArea] = useState("insideDhaka");
+  const [selectedSubDhakaArea, setSelectedSubDhakaArea] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,6 +52,9 @@ const CheckoutPage = () => {
             insideDhaka: res.charge.insideDhaka || 70,
             subDhaka: res.charge.subDhaka || 100,
             outsideDhaka: res.charge.outsideDhaka || 150,
+            subDhakaAreasList: res.charge.subDhakaAreas
+              ? res.charge.subDhakaAreas.split(",").map(a => a.trim()).filter(a => a !== "")
+              : []
           });
         }
       } catch (err) {
@@ -94,6 +99,8 @@ const CheckoutPage = () => {
     try {
       const result = await createOrderAction({
         ...formData,
+        deliveryAreaType: selectedArea,
+        subDhakaArea: selectedArea === "subDhaka" ? selectedSubDhakaArea : "",
         products,
         subTotal,
         deliveryCharge: currentDeliveryCharge,
@@ -261,6 +268,27 @@ const CheckoutPage = () => {
                 </select>
               </div>
 
+              {selectedArea === "subDhaka" && deliveryChargeData.subDhakaAreasList?.length > 0 && (
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-gray-400 uppercase ml-1">
+                    সাব-ঢাকা এরিয়া নির্বাচন করুন *
+                  </label>
+                  <select
+                    value={selectedSubDhakaArea}
+                    onChange={(e) => setSelectedSubDhakaArea(e.target.value)}
+                    required
+                    className="w-full border-gray-200 border rounded-2xl p-4 focus:ring-2 focus:ring-orange-400 outline-none bg-gray-50 cursor-pointer font-semibold"
+                  >
+                    <option value="">-- এরিয়া নির্বাচন করুন --</option>
+                    {deliveryChargeData.subDhakaAreasList.map((area, idx) => (
+                      <option key={idx} value={area}>
+                        {area}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="space-y-4 pt-4">
                 <label className="text-[11px] font-black text-gray-500 uppercase flex items-center gap-2">
                   <MdAccountBalanceWallet /> পেমেন্ট মেথড সিলেক্ট করুন
@@ -270,15 +298,15 @@ const CheckoutPage = () => {
                   <div
                     onClick={() => setPaymentMethod("Cash on Delivery")}
                     className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${paymentMethod === "Cash on Delivery"
-                        ? "border-orange-500 bg-orange-50"
-                        : "border-gray-100 hover:bg-gray-50"
+                      ? "border-orange-500 bg-orange-50"
+                      : "border-gray-100 hover:bg-gray-50"
                       }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "Cash on Delivery"
-                            ? "border-orange-500"
-                            : "border-gray-300"
+                          ? "border-orange-500"
+                          : "border-gray-300"
                           }`}
                       >
                         {paymentMethod === "Cash on Delivery" && (
@@ -294,15 +322,15 @@ const CheckoutPage = () => {
                   <div
                     onClick={() => setPaymentMethod("bKash")}
                     className={`flex items-center justify-between p-4 border-2 rounded-2xl cursor-pointer transition-all ${paymentMethod === "bKash"
-                        ? "border-pink-500 bg-pink-50"
-                        : "border-gray-100 hover:bg-gray-50"
+                      ? "border-pink-500 bg-pink-50"
+                      : "border-gray-100 hover:bg-gray-50"
                       }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "bKash"
-                            ? "border-pink-500"
-                            : "border-gray-300"
+                          ? "border-pink-500"
+                          : "border-gray-300"
                           }`}
                       >
                         {paymentMethod === "bKash" && (
@@ -382,8 +410,8 @@ const CheckoutPage = () => {
                 type="submit"
                 disabled={isSubmitting}
                 className={`w-full text-white font-black py-5 rounded-2xl cursor-pointer shadow-lg transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2 ${isSubmitting
-                    ? "bg-gray-400"
-                    : "bg-orange-500 hover:bg-orange-600"
+                  ? "bg-gray-400"
+                  : "bg-orange-500 hover:bg-orange-600"
                   }`}
               >
                 {isSubmitting ? "অর্ডার প্রসেস হচ্ছে..." : "অর্ডার কনফর্ম করুন"}
