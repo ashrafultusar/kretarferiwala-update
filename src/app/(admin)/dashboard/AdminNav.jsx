@@ -38,7 +38,6 @@ export default function AdminNav({ children }) {
     { href: "/dashboard/review", label: "Review", icon: Layers },
     { href: "/dashboard/slider", label: "Home Slider", icon: HomeIcon },
     { href: "/dashboard/deliveryform", label: "Delivery Charges", icon: CarIcon },
-    { href: "/dashboard/register", label: "Register", icon: User2Icon },
     { href: "/dashboard/allAdmin", label: "All Admin", icon: User2Icon },
   ];
 
@@ -50,7 +49,7 @@ export default function AdminNav({ children }) {
           ADMIN
         </Link>
         <button
-          className="p-2 bg-white/10 rounded-lg transition-colors"
+          className="p-2 cursor-pointer bg-white/10 rounded-lg transition-colors"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
         >
           {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -71,11 +70,11 @@ export default function AdminNav({ children }) {
         <div className="flex flex-col h-full">
           {/* Logo Section */}
           <div className="relative flex items-center gap-3 px-5 py-8 border-b border-white/5">
-            <Link 
-                href="/" 
-                className={`transition-all duration-300 whitespace-nowrap font-black text-xl text-white ${!isOpen && "lg:opacity-0 lg:invisible lg:w-0"}`}
+            <Link
+              href="/"
+              className={`transition-all duration-300 whitespace-nowrap font-black text-xl text-white ${!isOpen && "lg:opacity-0 lg:invisible lg:w-0"}`}
             >
-                BACK <span className="text-orange-500">HOME</span>
+              BACK <span className="text-orange-500">HOME</span>
             </Link>
 
             {/* Toggle Button for Desktop */}
@@ -109,8 +108,8 @@ export default function AdminNav({ children }) {
                       text-[13px] font-bold uppercase tracking-widest
                       rounded-xl
                       transition-all duration-300
-                      ${isActive 
-                        ? "bg-white text-black shadow-lg shadow-white/5" 
+                      ${isActive
+                        ? "bg-white text-black shadow-lg shadow-white/5"
                         : "hover:bg-white/5 hover:text-white"
                       }
                     `}

@@ -93,8 +93,8 @@ const OrderDetailsPage = () => {
           <div className="flex gap-2">
             <span
               className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm border ${order.status === "pending" || order.status === "active"
-                  ? "bg-amber-50 text-amber-600 border-amber-100"
-                  : "bg-green-50 text-green-600 border-green-100"
+                ? "bg-amber-50 text-amber-600 border-amber-100"
+                : "bg-green-50 text-green-600 border-green-100"
                 }`}
             >
               {order.status}
@@ -126,6 +126,15 @@ const OrderDetailsPage = () => {
                   <p className="text-gray-800 font-bold">{order.phone}</p>
                 </div>
                 <div className="md:col-span-2 border-t pt-4 mt-2 border-gray-50">
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">
+                    ডেলিভারি এরিয়া
+                  </p>
+                  <p className="text-gray-800 font-bold text-sm mb-4">
+                    {order.deliveryAreaType === 'insideDhaka' && 'ঢাকার ভিতরে'}
+                    {order.deliveryAreaType === 'outsideDhaka' && 'ঢাকার বাইরে'}
+                    {order.deliveryAreaType === 'subDhaka' && `ঢাকার পার্শ্ববর্তী${order.subDhakaArea ? ` - ${order.subDhakaArea}` : ''}`}
+                    {!order.deliveryAreaType && 'উল্লেখ নেই'}
+                  </p>
                   <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">
                     ডেলিভারি ঠিকানা
                   </p>

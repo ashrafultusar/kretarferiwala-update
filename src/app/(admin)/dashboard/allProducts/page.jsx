@@ -1,226 +1,114 @@
-"use client";
-
-import LoadingPage from "@/app/loading";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { MdDeleteOutline, MdEdit } from "react-icons/md";
-import { toast } from "react-toastify";
-import { deleteProduct } from "@/actions/product";
-import { getAllProducts } from "@/lib/data/products";
+import { MdEdit } from "react-icons/md";
+import { getPagedProducts } from "@/lib/data/products";
+import { CategorySelect, DeleteProductAction, PaginationControls } from "./ProductClientComponents";
 
-const AllCategoriesProducts = () => {
-  const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState("");
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState(null);
+export default async function AllCategoriesProducts({ searchParams }) {
+  const params = await searchParams; // In Next.js 15
+  const activeCategory = params?.category || "all";
+  const currentPage = parseInt(params?.page || "1", 10);
+  const limit = 20;
 
-  // Fetch products
-  useEffect(() => {
-    const fetchAllProducts = async () => {
-      setLoading(true);
-      try {
-        const res = await getAllProducts();
-        if (res.success) {
-          const data = res.products;
-          setProducts(data);
-          setFilteredProducts(data);
-
-          // Build unique category list from all products
-          const uniqueCategories = Array.from(
-            new Set(
-              data.flatMap((p) =>
-                Array.isArray(p.category) ? p.category : [p.category]
-              )
-            )
-          );
-          setCategories(uniqueCategories);
-
-          if (uniqueCategories.length > 0) {
-            setActiveCategory(uniqueCategories[0]);
-          }
-        } // close the if block
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAllProducts();
-  }, []);
-
-  // Category filter
-  useEffect(() => {
-    if (activeCategory) {
-      const filtered = products.filter((product) => {
-        if (Array.isArray(product.category)) {
-          return product.category.includes(activeCategory);
-        } else {
-          return product.category === activeCategory;
-        }
-      });
-      setFilteredProducts(filtered);
-    } else {
-      setFilteredProducts(products);
-    }
-  }, [activeCategory, products]);
-
-  // Delete Product
-  const handleDelete = async () => {
-    if (!productToDelete) return;
-
-    try {
-      const res = await deleteProduct(productToDelete);
-
-      if (res.success) {
-        setProducts((prev) => prev.filter((p) => p._id !== productToDelete));
-        setFilteredProducts((prev) =>
-          prev.filter((p) => p._id !== productToDelete)
-        );
-        setIsModalOpen(false);
-        setProductToDelete(null);
-        toast.success(res.message || "Product deleted successfully!");
-      } else {
-        toast.error(res.message || "Failed to delete the product");
-      }
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      toast.error("An error occurred while deleting the product");
-    }
-  };
-
-  const openDeleteModal = (id) => {
-    setProductToDelete(id);
-    setIsModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    setIsModalOpen(false);
-    setProductToDelete(null);
-  };
-
-  if (loading) {
-    return <LoadingPage />;
-  }
+  const { success, products, totalProducts, overallTotalProducts, categories, totalPages } = await getPagedProducts({
+    category: activeCategory,
+    page: currentPage,
+    limit,
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Product Management</h2>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-gray-200 pb-4">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-800">Total Products: {overallTotalProducts || 0}</h2>
+          {activeCategory !== "all" && (
+            <p className="text-[#ff6900] font-semibold mt-1 text-lg">
+              {activeCategory} Products: {totalProducts || 0}
+            </p>
+          )}
+        </div>
         <Link href="/dashboard/createProduct">
-          <button className="px-5 py-2 cursor-pointer bg-teal-600 text-white rounded-lg shadow hover:bg-teal-700 transition-all">
-            Create Product
+          <button className="px-6 py-2.5 bg-[#ff6900] text-white rounded-lg shadow-md hover:bg-[#e65c00] transition-all font-semibold">
+            + Create Product
           </button>
         </Link>
       </div>
 
       {/* Category Select */}
-      <div className="mb-6 w-xl">
-        <select
-          value={activeCategory}
-          onChange={(e) => setActiveCategory(e.target.value)}
-          className="px-4 py-2 border cursor-pointer border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-400 focus:outline-none w-full md:w-1/3 bg-white text-gray-700"
-        >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
+      <div className="mb-8">
+        <label className="block text-sm font-semibold text-gray-600 mb-2">Filter by Category:</label>
+        <CategorySelect currentCategory={activeCategory} categories={categories || []} />
       </div>
 
       {/* Products List */}
-      <div className="space-y-4">
-        {filteredProducts.length === 0 ? (
-          <div className="text-center text-gray-500 mt-6">
-            No products found
-          </div>
-        ) : (
-          filteredProducts.map((product) => (
+      {!success || products.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
+          <p className="text-gray-500 text-lg">No products found.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {products.map((product) => (
             <div
               key={product._id}
-              className="flex items-center justify-between bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
+              className="flex items-start md:items-center justify-between bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-shadow group"
             >
-              {/* Left: Image + Info */}
-              <div className="flex items-center gap-4">
-                <div className="relative w-20 h-20 shrink-0">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-5 w-full">
+                <div className="relative w-24 h-24 shrink-0 rounded-lg overflow-hidden border border-gray-200">
                   <Image
-                    src={product.images[0]}
-                    alt={product.name}
+                    src={product.images && product.images.length > 0 ? product.images[0] : "/placeholder.png"}
+                    alt={product.name || "Product Image"}
+                    sizes="(max-width: 96px) 100vw, 96px"
                     fill
-                    className="object-cover rounded-md"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
 
-                <div className="flex flex-col">
-                  <h3 className="text-lg font-semibold text-gray-800">
+                <div className="flex flex-col flex-grow">
+                  <h3 className="text-lg font-bold text-gray-800 mb-1 line-clamp-2">
                     {product.name}
                   </h3>
-                  <p className="text-teal-600 font-bold text-sm">
-                    ${product.discountPrice ? product.discountPrice : product.regularPrice}
-                  </p>
-                  <span className="text-gray-500 text-sm">
-                    {Array.isArray(product.category)
-                      ? product.category.join(", ")
-                      : product.category}
-                  </span>
-                  {product.createdAt && (
-                    <span className="text-gray-400 text-xs">
+                  <div className="flex items-center gap-3 mb-2">
+                    <p className="text-[#ff6900] font-extrabold text-lg">
+                      ${product.discountPrice ? product.discountPrice : product.regularPrice}
+                    </p>
+                    {product.discountPrice > 0 && product.discountPrice !== product.regularPrice && (
+                      <p className="text-gray-400 text-sm line-through decoration-gray-400">
+                        ${product.regularPrice}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-bold tracking-wider bg-orange-50 text-[#ff6900] px-2 py-1 rounded">
+                      {Array.isArray(product.category)
+                        ? product.category.join(", ")
+                        : product.category}
+                    </span>
+                    <span className="text-gray-400 text-xs font-semibold bg-gray-100 px-2 py-1 rounded">
                       {new Date(product.createdAt).toLocaleDateString()}
                     </span>
-                  )}
+                  </div>
                 </div>
               </div>
 
-              {/* Right: Edit + Delete */}
-              <div className="flex gap-3 items-center">
+              {/* Actions */}
+              <div className="flex md:flex-col gap-3 items-center ml-4 mt-4 md:mt-0 shrink-0">
                 <Link href={`/dashboard/allProducts/${product._id}`}>
-                  <MdEdit className="text-xl text-gray-600 hover:text-teal-600 cursor-pointer" />
+                  <button className="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition-colors" title="Edit Product">
+                    <MdEdit className="text-xl" />
+                  </button>
                 </Link>
-                <button
-                  onClick={() => openDeleteModal(product._id)}
-                  className="text-red-500 hover:text-red-700 transition-colors"
-                  aria-label={`Delete ${product.name}`}
-                >
-                  <MdDeleteOutline className="text-2xl cursor-pointer" />
-                </button>
+                <DeleteProductAction productId={product._id} productName={product.name} />
               </div>
             </div>
-          ))
-        )}
-      </div>
-
-      {/* Delete Confirmation Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Are you sure?
-            </h3>
-            <p className="text-gray-500 mb-4">This action cannot be undone.</p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={closeDeleteModal}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
+      )}
+
+      {totalPages > 1 && (
+        <PaginationControls currentPage={currentPage} totalPages={totalPages} />
       )}
     </div>
   );
-};
-
-export default AllCategoriesProducts;
+}
