@@ -73,3 +73,40 @@ export async function deleteReview(id) {
         return { success: false, message: "Delete failed." };
     }
 }
+
+export async function updateReview(id, formData) {
+    try {
+        await connectDB();
+
+        const name = formData.get("name");
+        const rating = formData.get("rating");
+        const reviewText = formData.get("reviewText");
+        const imageFile = formData.get("avatar");
+
+        const existingReview = await Review.findById(id);
+        if (!existingReview) {
+            return { success: false, message: "Review not found" };
+        }
+
+        let avatarUrl = existingReview.avatar;
+
+        if (imageFile && imageFile.size > 0) {
+            avatarUrl = await uploadImage(imageFile);
+        }
+
+        await Review.findByIdAndUpdate(id, {
+            name,
+            rating: Number(rating),
+            reviewText,
+            avatar: avatarUrl,
+        });
+
+        revalidatePath("/dashboard/review");
+        revalidatePath("/");
+
+        return { success: true, message: "Review updated successfully!" };
+    } catch (error) {
+        console.error("Update Error:", error);
+        return { success: false, message: "Failed to update review." };
+    }
+}
